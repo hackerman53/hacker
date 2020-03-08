@@ -1,0 +1,63 @@
+ Assignment 3 :SET B
+
+project4=# create view v1 as select emp_name,qualification from Employee order by qualification;
+CREATE VIEW
+project4=# select * from v1;
+       emp_name       |                   qualification                   
+----------------------+---------------------------------------------------
+ Ananya               | BCA                                              
+ Ashwini              | MCA                                              
+ Alok                 | MCA                                               
+ Preeti               | Mcom                                             
+ Deepali              | MCS                                              
+ Deepak               | MCS                                              
+ Anand                | PG                                               
+ Rajesh               | PG                                               
+(8 rows)
+
+project4=# create view v2 as select P_name,P_type,start_date from Proj_Emp,Project where Project.P_no=Proj_Emp.P_no order by start_date;
+CREATE VIEW
+project4=# select * from v2;
+             p_name             |        p_type        | start_date
+--------------------------------+---------------------+-----------
+ Admission system               | Education            | 2009-07-03
+ Samsung                        | Commercial           | 2010-07-03
+ Samsung                        | Commercial           | 2010-07-03
+ Samsung                        | Commercial           | 2010-07-03
+ Samsung                        | Commercial           | 2010-07-03
+ Mechanism                      | Robotics             | 2011-07-21
+ Result system                  | System               | 2012-04-11
+ Operating system               | System               | 2012-04-11
+ Result system                  | System               | 2012-04-11
+(9 rows)
+
+project4=# select qualification from v1 group by qualification;
+                   qualification                   
+----------------------------------------------------
+ BCA                                               
+ MCA                                              
+ Mcom                                             
+ MCS                                              
+ PG                                               
+(5 rows)
+
+project4=# select P_name,P_type from v2 where start_date='2007-07-03';
+ p_name | p_type
+--------+-------
+(0 rows)
+
+project4=# select P_name,P_type from v2 where start_date='2010-07-03';
+             p_name             |        p_type       
+--------------------------------+---------------------
+ Samsung                        | Commercial         
+ Samsung                        | Commercial         
+ Samsung                        | Commercial         
+ Samsung                        | Commercial         
+(4 rows)
+
+project4=# select * from v1 where qualification='MCA';
+       emp_name       |                   qualification                   
+----------------------+---------------------------------------------------
+ Alok                 | MCA                                               
+ Ashwini              | MCA                                              
+(2 rows)
