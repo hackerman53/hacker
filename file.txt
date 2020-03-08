@@ -1,0 +1,253 @@
+
+BCA / BCS
+
+This is blog is helpful for the students of computer science, Specially BCA, BCS and BCA (Science). Contact Us
+
+    Home
+    BCA
+    BCS
+    RDBMS PRACTICE QUE
+    C Programming
+    Data Structure
+    Core Java
+    Contact Us
+
+RDBMS_PRACT_3_E
+
+
+Assignment 3 :SET E
+
+
+[NRC@localhost ~]$ su - postgres
+Password:
+-bash-4.1$ psql
+psql (8.4.5)
+Type "help" for help.
+
+postgres=# \c student4;
+psql (8.4.5)
+You are now connected to database "student4".
+
+student4=# select * from teacher;
+ t_no |        t_name        |  qualification  | experience
+------+----------------------+-----------------+------------
+    1 | Mr.Patil             | Ph.D            |          7
+    2 | Mr.More              | Ph.D            |          5
+    3 | Mrs.Sharma           | PG              |          4
+    4 | Mr.Kulkarni          | MCS             |          3
+    5 | Mrs.Joshi            | Ph.D            |         10
+    6 | Miss Deepali         | MCS             |          2
+    7 | Miss Varsha          | Ph.D            |          6
+(7 rows)
+
+student4=# select * from stud_teacher;
+ s_no | t_no |            subject            
+------+------+--------------------------------
+  102 |    1 | Electronics                  
+  101 |    1 | Digital Electronics          
+  106 |    1 | Analog Electronics            
+  101 |    2 | Comp.Sci                     
+  104 |    2 | DS                           
+  105 |    3 | RDBMS                        
+  102 |    3 | RDBMS                        
+  107 |    4 | Discrete Maths               
+  107 |    5 | Statistics                   
+  105 |    6 | Accounts                     
+  107 |    6 | SP                           
+  104 |    7 | English                      
+  106 |    7 | Marathi                      
+(13 rows)
+
+student4=# select teacher.t_no,t_name,qualification,experience from teacher,stud_teacher where teacher.t_no=stud_teacher.t_no and subject='Discrete Maths';
+ t_no |        t_name        |  qualification  | experience
+------+----------------------+-----------------+------------
+    4 | Mr.Kulkarni          | MCS             |          3
+(1 row)
+
+student4=# select teacher.t_no,t_name,qualification,experience from teacher,stud_teacher where teacher.t_no=stud_teacher.t_no and subject='Electronics';
+ t_no |        t_name        |  qualification  | experience
+------+----------------------+-----------------+------------
+    1 | Mr.Patil             | Ph.D            |          7
+(1 row)
+
+student4=# update stud_teacher set subject='Mathematics' where t_no=1;
+UPDATE 3
+student4=# select teacher.t_no,t_name,qualification,experience from teacher,stud_teacher where teacher.t_no=stud_teacher.t_no and subject='Mathematics';
+ t_no |        t_name        |  qualification  | experience
+------+----------------------+-----------------+------------
+    1 | Mr.Patil             | Ph.D            |          7
+    1 | Mr.Patil             | Ph.D            |          7
+    1 | Mr.Patil             | Ph.D            |          7
+(3 rows)
+
+student4=# update stud_teacher set subject='Mathematics' where t_no=2;
+UPDATE 2
+student4=# update stud_teacher set subject='Mathematics' where t_no=3;
+UPDATE 2
+student4=# select teacher.t_no,t_name,qualification,experience from teacher,stud_teacher where teacher.t_no=stud_teacher.t_no and subject='Mathematics';
+ t_no |        t_name        |  qualification  | experience
+------+----------------------+-----------------+------------
+    1 | Mr.Patil             | Ph.D            |          7
+    1 | Mr.Patil             | Ph.D            |          7
+    1 | Mr.Patil             | Ph.D            |          7
+    2 | Mr.More              | Ph.D            |          5
+    2 | Mr.More              | Ph.D            |          5
+    3 | Mrs.Sharma           | PG              |          4
+    3 | Mrs.Sharma           | PG              |          4
+(7 rows)
+
+student4=# select distinct teacher.t_no,t_name,qualification,experience from teacher,stud_teacher where teacher.t_no=stud_teacher.t_no and subject='Mathematics';
+ t_no |        t_name        |  qualification  | experience
+------+----------------------+-----------------+------------
+    1 | Mr.Patil             | Ph.D            |          7
+    2 | Mr.More              | Ph.D            |          5
+    3 | Mrs.Sharma           | PG              |          4
+(3 rows)
+
+student4=# create view v1 as select teacher.t_no,t_name,qualification,experience from teacher,stud_teacher where teacher.t_no=stud_teacher.t_no and subject='Mathematics';
+CREATE VIEW
+student4=# select * from v1;
+ t_no |        t_name        |  qualification  | experience
+------+----------------------+-----------------+------------
+    1 | Mr.Patil             | Ph.D            |          7
+    1 | Mr.Patil             | Ph.D            |          7
+    1 | Mr.Patil             | Ph.D            |          7
+    2 | Mr.More              | Ph.D            |          5
+    2 | Mr.More              | Ph.D            |          5
+    3 | Mrs.Sharma           | PG              |          4
+    3 | Mrs.Sharma           | PG              |          4
+(7 rows)
+
+student4=# create view v2 as select distinct teacher.t_no,t_name,qualification,experience from teacher,stud_teacher where teacher.t_no=stud_teacher.t_no and subject='Mathematics';
+CREATE VIEW
+student4=# select * from v2;
+ t_no |        t_name        |  qualification  | experience
+------+----------------------+-----------------+------------
+    1 | Mr.Patil             | Ph.D            |          7
+    2 | Mr.More              | Ph.D            |          5
+    3 | Mrs.Sharma           | PG              |          4
+(3 rows)
+
+student4=# select student.s_no,s_name,s_class,s_add,stud_teacher.t_no from student,teacher,stud_teacher where student.s_no=stud_teacher.t_no and teacher.t_no=stud_teacher.t_no and experience>5;
+ s_no | s_name | s_class | s_add | t_no
+------+--------+---------+-------+------
+(0 rows)
+
+student4=# select student.s_no,s_name,s_class,s_add,stud_teacher.t_no from student,teacher,stud_teacher where student.s_no=stud_teacher.s_no and teacher.t_no=stud_teacher.t_no and experience>5;
+ s_no |             s_name             |  s_class   |                       s_add                        | t_no
+------+--------------------------------+------------+----------------------------------------------------+------
+  107 | Harshad                        | M.Com      | Pimpri                                             |    5
+  104 | Rajesh                         | tybcs      | F.C.road                                           |    7
+  106 | Pooja                          | sybcs      | Sangvi                                             |    7
+  102 | Suresh                         | fybcs      | Marketyard                                         |    1
+  101 | Raj                            | sybcs      | Shukrawar Peth                                     |    1
+  106 | Pooja                          | sybcs      | Sangvi                                             |    1
+(6 rows)
+
+student4=# create view v3 as select student.s_no,s_name,s_class,s_add,stud_teacher.t_no from student,teacher,stud_teacher where student.s_no=stud_teacher.s_no and teacher.t_no=stud_teacher.t_no and experience>5;
+CREATE VIEW
+student4=# select * from v3;
+ s_no |             s_name             |  s_class   |                       s_add                        | t_no
+------+--------------------------------+------------+----------------------------------------------------+------
+  107 | Harshad                        | M.Com      | Pimpri                                             |    5
+  104 | Rajesh                         | tybcs      | F.C.road                                           |    7
+  106 | Pooja                          | sybcs      | Sangvi                                             |    7
+  102 | Suresh                         | fybcs      | Marketyard                                         |    1
+  101 | Raj                            | sybcs      | Shukrawar Peth                                     |    1
+  106 | Pooja                          | sybcs      | Sangvi                                             |    1
+(6 rows)
+
+                                                                     ^
+student4=# select max(experience)from v2;
+ max
+-----
+   7
+(1 row)
+
+
+student4=# select max(experience)from v2 group by t_name;
+ max
+-----
+   7
+   5
+   4
+(3 rows)
+
+student4=# select t_name from v2 where experience in(select max(experience)from v2);
+        t_name       
+----------------------
+ Mr.Patil           
+(1 row)
+
+student4=# select s_name from v3 where s_class='sybcs';
+             s_name            
+--------------------------------
+ Prakash                       
+ Raj                        
+ Pooja                        
+(3 rows)
+
+student4=# select distinct s_name from v3 where s_class='sybcs';
+             s_name            
+--------------------------------
+ Raj                        
+ Pooja                        
+(2 rows)
+Email ThisBlogThis!Share to TwitterShare to FacebookShare to Pinterest
+No comments:
+
+Post a Comment
+
+Home
+Subscribe to: Posts (Atom)
+Click to Join Our Telegram Channel For Programming Tricks
+Click to Join Our Telegram Channel For Programming Tricks
+Best For Programmers
+For Practical Videos Subscribe Us On YouTube
+For Practical Videos Subscribe Us On YouTube
+Click For Admission Inquiry
+About Me
+My photo
+
+Neha R. Biradar
+    Co-Partner at NR Classes, C Programming, CPP, Data Structure Using C, DBMS, RDBMS, Maths, Java, Statistics. Compiler Construction, Python, VB6.... I Simply Love Teaching These Subjects... 
+
+View my complete profile
+Students Should Follow These Sources too
+
+    Programming Tutorials
+    For Practical Videos NR Classes YouTube Channel
+    For More Practical Programming Stuff
+
+Click to Attend Practical Slips Solution Lectures
+Total Pageviews
+1059758
+Blog Archive
+
+    ▼  2019 (1)
+        ▼  April (1)
+            C Programming Practice Programs 1.write a menu ...
+
+    ►  2018 (4)
+
+    ►  2016 (3)
+
+	
+Like Us On Facebook
+C Programming batch
+C Programming batch
+Project Lecture
+Project Lecture
+Followers
+Contact Form
+
+Name
+
+Email *
+
+Message *
+
+	
+Admissions Started
+Admissions Started
+NR Classes LLP. Simple theme. Powered by Blogger.
