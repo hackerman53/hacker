@@ -1,0 +1,277 @@
+
+Assignment 3 : SET A
+
+[NRC@localhost ~]$ su - postgres
+Password:
+-bash-4.1$ psql
+psql (8.4.5)
+Type "help" for help.
+
+postgres=# \c bank4;
+FATAL:  database "bank4" does not exist
+Previous connection kept
+postgres=# \c bank4;
+psql (8.4.5)
+You are now connected to database "bank4".
+bank4=# select * from Customer;
+ c_no |        c_name        |                c_add                |        c_city       
+------+----------------------+-------------------------------------+----------------------
+    1 | Raj                  | Laxmiroad                           | Pune               
+    2 | Disha                | Churchgate                          | Mumbai             
+    3 | Mahesh               | Marketyard                          | Pune               
+    4 | Jay                  | ABC road                            | Nashik             
+    5 | Preeti               | XYZ road                            | Nagar              
+    6 | Kartik               | Thane                               | Mumbai             
+(6 rows)
+
+bank4=# select * from Loan_app;
+ l_no | l_amt_required | l_amt_approved |   l_date  
+------+----------------+----------------+------------
+  121 |     $50,000.00 |     $45,000.00 | 2010-09-15
+  131 |     $75,000.00 |     $60,000.00 | 2005-09-07
+  141 |    $100,000.00 |     $80,000.00 | 1999-11-27
+  151 |    $200,000.00 |    $150,000.00 | 2012-04-19
+  161 |    $500,000.00 |    $450,000.00 | 2006-12-08
+  171 |    $300,000.00 |    $250,000.00 | 2005-12-04
+  181 |    $500,000.00 |    $350,000.00 | 2002-12-08
+  191 |     $50,000.00 |     $40,000.00 | 2012-06-18
+(8 rows)
+
+bank4=# select * from B_C_L;
+ br_id | c_no | l_no
+-------+------+------
+   101 |    3 |  141
+   101 |    1 |  161
+   102 |    1 |  171
+   102 |    6 |  151
+   103 |    2 |  121
+   103 |    5 |  161
+   103 |    4 |  131
+   104 |    2 |  131
+(8 rows)
+
+bank4=# select Customer.C_no,Customer.C_name from B_C_L,Customer,Loan_app where Customer.C_no=B_C_L.C_no and Loan_app.L_no=B_C_L.L_no and L_amt_required>'$100000';
+ c_no |        c_name        
+------+----------------------
+    1 | Raj                
+    1 | Raj                
+    6 | Kartik             
+    5 | Preeti             
+(4 rows)
+
+bank4=# create view v1 as select Customer.C_no,Customer.C_name from B_C_L,Customer,Loan_app where Customer.C_no=B_C_L.C_no and Loan_app.L_no=B_C_L.L_no and L_amt_required>'$100000';
+
+bank4=# select * from v1;
+ c_no |        c_name       
+------+----------------------
+    1 | Raj                
+    1 | Raj                
+    6 | Kartik              
+    5 | Preeti             
+(4 rows)
+
+bank4=# select C_no from v1;
+ c_no
+------
+    1
+    1
+    6
+    5
+(4 rows)
+
+bank4=# select * from Branch;
+ br_id |            br_name             |  br_city  
+-------+--------------------------------+------------
+   101 | Aundh                          | Nagar    
+   102 | Deccan                         | Pune     
+   103 | M.G.road                       | Pune     
+   104 | Thane                          | Mumbai   
+   105 | Pimpri                         | Pune     
+(5 rows)
+
+bank4=# insert into Branch values(106,'Sadashiv Peth','Pune
+bank4'# ^C
+bank4=# insert into Branch values(106,'Sadashiv Peth','Pune');
+INSERT 0 1
+bank4=# insert into Loan_app values(110,'$500000','$400000','2014-09-12');
+INSERT 0 1
+bank4=# insert into B_C_L values(106,2,110);
+INSERT 0 1
+bank4=# insert into B_C_L values(106,3,109);
+ERROR:  insert or update on table "b_c_l" violates foreign key constraint "b_c_l_l_no_fkey"
+DETAIL:  Key (l_no)=(109) is not present in table "loan_app".
+bank4=# insert into B_C_L values(106,3,191);
+INSERT 0 1
+bank4=# insert into B_C_L values(106,4,181);
+INSERT 0 1
+
+bank4=# create view v2 as select Loan_app.L_no,Loan_app.L_amt_required,Loan_app.L_amt_approved,Loan_app.L_date from Loan_app,Branch,B_C_L where Loan_app.L_no=B_C_L.L_no and Branch.Br_id=B_C_L.Br_id and Br_name='Sadashiv Peth';
+CREATE VIEW
+bank4=# select * from v2;
+ l_no | l_amt_required | l_amt_approved |   l_date  
+------+----------------+----------------+------------
+  110 |    $500,000.00 |    $400,000.00 | 2014-09-12
+  191 |     $50,000.00 |     $40,000.00 | 2012-06-18
+  181 |    $500,000.00 |    $350,000.00 | 2002-12-08
+(3 rows)
+
+bank4=# create view v3 as select Customer.C_no,Customer.C_name,L_amt_required from B_C_L,Customer,Loan_app where Customer.C_no=B_C_L.C_no and Loan_app.L_no=B_C_L.L_no and L_amt_required>'$100000';
+CREATE VIEW
+bank4=# select * from v3;
+ c_no |        c_name        | l_amt_required
+------+----------------------+----------------
+    1 | Raj                  |    $500,000.00
+    1 | Raj                  |    $300,000.00
+    6 | Kartik               |    $200,000.00
+    5 | Preeti               |    $500,000.00
+    2 | Disha                |    $500,000.00
+    4 | Jay                  |    $500,000.00
+(6 rows)
+
+bank4=# select C_no,C_name from v3 where L_amt_required='$500000';
+ c_no |        c_name       
+------+----------------------
+    1 | Raj                
+    5 | Preeti             
+    2 | Disha              
+    4 | Jay                
+(4 rows)
+
+bank4=# select * from v2 where L_amt_required>'$50000';
+ l_no | l_amt_required | l_amt_approved |   l_date  
+------+----------------+----------------+------------
+  110 |    $500,000.00 |    $400,000.00 | 2014-09-12
+  181 |    $500,000.00 |    $350,000.00 | 2002-12-08
+(2 rows)
+
+bank4=# select L_no,L_amt_required from v2 where L_no in(select L_no from v2);
+ l_no | l_amt_required
+------+----------------
+  110 |    $500,000.00
+  191 |     $50,000.00
+  181 |    $500,000.00
+(3 rows)
+
+bank4=# select * from v2;
+ l_no | l_amt_required | l_amt_approved |   l_date  
+------+----------------+----------------+------------
+  110 |    $500,000.00 |    $400,000.00 | 2014-09-12
+  191 |     $50,000.00 |     $40,000.00 | 2012-06-18
+  181 |    $500,000.00 |    $350,000.00 | 2002-12-08
+(3 rows)
+
+bank4=# select distinct L_amt_required from v2 where L_no in(select L_no from v2);
+ l_amt_required
+----------------
+     $50,000.00
+    $500,000.00
+(2 rows)
+
+bank4=# select L_no,L_amt_required from v2 where L_no =(select L_no from v2);
+ERROR:  more than one row returned by a subquery used as an expression
+bank4=# select L_no,L_amt_required from v2 where L_no =all(select L_no from v2);
+ l_no | l_amt_required
+------+----------------
+(0 rows)
+
+bank4=# select L_no,L_amt_required from v2 where L_no =some(select L_no from v2);
+ l_no | l_amt_required
+------+----------------
+  110 |    $500,000.00
+  191 |     $50,000.00
+  181 |    $500,000.00
+(3 rows)
+
+bank4=# select L_no,L_amt_required from v2 where L_no =any(select L_no from v2);
+ l_no | l_amt_required
+------+----------------
+  110 |    $500,000.00
+  191 |     $50,000.00
+  181 |    $500,000.00
+(3 rows)
+
+bank4=# select L_no,L_amt_required from v2 where L_no =(select L_no from v2);
+ERROR:  more than one row returned by a subquery used as an expression
+bank4=# select L_no,L_amt_required from v2 where L_no=(select L_no from v2);
+ERROR:  more than one row returned by a subquery used as an expression
+bank4=# select L_no,L_amt_required from v2 where L_amt_required=(select L_amt_required from v2);
+ERROR:  more than one row returned by a subquery used as an expression
+bank4=# select L_no,L_amt_required from v2 where L_amt_required in(select L_amt_required from v2);
+ l_no | l_amt_required
+------+----------------
+  110 |    $500,000.00
+  191 |     $50,000.00
+  181 |    $500,000.00
+(3 rows)
+
+bank4=# select L_no,L_amt_required from v2 where L_amt_required=any(select L_amt_required from v2);
+ l_no | l_amt_required
+------+----------------
+  110 |    $500,000.00
+  191 |     $50,000.00
+  181 |    $500,000.00
+(3 rows)
+
+bank4=# select L_no,L_amt_required from v2 where L_amt_required in(select L_amt_required from v2);
+ l_no | l_amt_required
+------+----------------
+  110 |    $500,000.00
+  191 |     $50,000.00
+  181 |    $500,000.00
+(3 rows)
+
+bank4=# select L_no,L_amt_required from v2 where L_amt_required in(select L_amt_required from v2);
+ l_no | l_amt_required
+------+----------------
+  110 |    $500,000.00
+  191 |     $50,000.00
+  181 |    $500,000.00
+(3 rows)
+
+bank4=# select L_amt_required from v2;
+ l_amt_required
+----------------
+    $500,000.00
+     $50,000.00
+    $500,000.00
+(3 rows)
+
+bank4=# select L_amt_required from v2 as t where L_amt_required=t.L_amt_required;
+ l_amt_required
+----------------
+    $500,000.00
+     $50,000.00
+    $500,000.00
+(3 rows)
+
+bank4=# select L_no from v2 as t where L_amt_required=t.L_amt_required;
+ l_no
+------
+  110
+  191
+  181
+(3 rows)
+
+bank4=# select distinct L_no from v2 as t where L_amt_required=t.L_amt_required;
+ l_no
+------
+  191
+  110
+  181
+(3 rows)
+
+bank4=# select distinct L_no from v2;;
+ l_no
+------
+  191
+  110
+  181
+(3 rows)
+
+
+bank4=# select L_no,L_amt_required from v2 where L_amt_required='$500000';
+ l_no | l_amt_required
+------+----------------
+  110 |    $500,000.00
+  181 |    $500,000.00
+(2 rows)
