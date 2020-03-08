@@ -1,0 +1,79 @@
+ RDBMS_PRACT_3_D
+
+
+Assignment 3 :SET D
+
+warehouse4=# select s_id,store_name,location_city from stores,warehouse where stores.wid=warehouse.wid and wname='spares';
+ s_id |      store_name      |    location_city    
+------+---------------------+---------------------
+  101 | Pragati              | Pune               
+  102 | Deshpande            | Pune                
+  103 | Jyoti                | Nagpur             
+(3 rows)
+
+warehouse4=# create view v1 as select s_id,store_name,location_city,stores.wid from stores,warehouse where stores.wid=warehouse.wid and wname='spares';
+CREATE VIEW
+warehouse4=# select * from v1;
+ s_id |      store_name      |    location_city     | wid
+------+---------------------+---------------------+----
+  101 | Pragati              | Pune                 |   2
+  102 | Deshpande            | Pune                 |   2
+  103 | Jyoti                | Nagpur               |   2
+(3 rows)
+
+warehouse4=# select * from customer;
+ c_no |                       c_name                       |    addr     |       cu_city       
+------+---------------------------------------------------+------------+---------------------
+ 1001 | Mr.Patil                                           | Karvenagar  | Pune               
+ 1002 | Mr.Sharma                                          | MGroad      | Rajkot             
+ 1003 | Mr.Mehra                                           | Dombivali   | Mumbai             
+ 1004 | Mr.Dave                                            | KVroad      | Jaipur             
+ 1005 | Mr.Kulkarni                                        | FCroad      | Indore             
+ 1006 | Mr.Ghate                                           | Gandhinagar | Ahmedabad          
+(6 rows)
+
+warehouse4=# select * from orders;
+ o_no |   o_date   | c_no
+------+-----------+-----
+  121 | 2014-12-04 | 1001
+  122 | 2014-10-14 | 1002
+  123 | 2014-08-23 | 1003
+  124 | 2014-05-13 | 1004
+  125 | 2014-05-16 | 1005
+  126 | 2014-11-19 | 1006
+(6 rows)
+
+warehouse4=# update orders set o_date='2013-10-03' where o_no=121 and o_no=122;
+UPDATE 0
+warehouse4=# update orders set o_date='2013-10-03' where o_no=121 and o_no=122;
+UPDATE 0
+warehouse4=# update orders set o_date='2013-10-03' where o_no=121;
+UPDATE 1
+warehouse4=# update orders set o_date='2013-10-03' where o_no=122;
+UPDATE 1
+warehouse4=# select * from orders;
+ o_no |   o_date   | c_no
+------+-----------+-----
+  123 | 2014-08-23 | 1003
+  124 | 2014-05-13 | 1004
+  125 | 2014-05-16 | 1005
+  126 | 2014-11-19 | 1006
+  121 | 2013-10-03 | 1001
+  122 | 2013-10-03 | 1002
+(6 rows)
+
+
+warehouse4=# create view v2 as select customer.c_no,customer.c_name,customer.addr,cu_city from customer,orders where orders.c_no=customer.c_no and o_date='2013-10-03';
+CREATE VIEW
+warehouse4=# select * from v2;
+ c_no |                       c_name                       |    addr    |       cu_city       
+------+---------------------------------------------------+-----------+---------------------
+ 1001 | Mr.Patil                                           | Karvenagar | Pune               
+ 1002 | Mr.Sharma                                          | MGroad     | Rajkot             
+(2 rows)
+
+warehouse4=# select c_name from v2 where cu_city='Pune';
+                       c_name                      
+----------------------------------------------------
+ Mr.Patil                                         
+(1 row)
