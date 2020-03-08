@@ -1,0 +1,91 @@
+
+bank4=# create function tcust(nm char(30))returns int as '
+declare cnt int;
+begin
+select count(c_no) into cnt from B_C_L where br_id in(select br_id from Branch where br_name=nm);
+return cnt;
+end; '
+language 'plpgsql';
+CREATE FUNCTION
+bank4=# select tcust('Aundh');
+ tcust
+-------
+     2
+(1 row)
+...................................................................................
+bank4=# create function maximum()returns money as '
+declare lmax money;
+begin
+select max(L_amt_approved) into lmax from Loan_app;
+return lmax;
+end; '
+language 'plpgsql';
+CREATE FUNCTION
+bank4=# select maximum();
+   maximum  
+-------------
+ $450,000.00
+(1 row)
+-----------------------------------------------------------------------------
+
+
+****Project5****
+
+project5=#  create function cntemp(name char(30))returns int as '
+declare p int;
+begin
+select count(Employee.Emp_no) into p  from Employee,Project,Proj_Emp where Project.P_no=Proj_Emp.P_no and Employee.Emp_no=Proj_Emp.Emp_no and P_name=name;
+return p;
+end; '
+language 'plpgsql';
+CREATE FUNCTION
+project5=# select cntemp('Samsung');
+ cntemp
+--------
+      4
+(1 row)
+..............................................................
+
+project5=#  create or replace function num4()returns int as $$
+declare n int;
+begin
+select count(Emp_no) into n from Employee where join_date<'2010-10-03';
+return n;
+end; $$
+language 'plpgsql';
+CREATE FUNCTION
+project5=# select num4();
+ num4
+------
+    4
+(1 row)
+
+----------------------------------------------------------------------
+
+buisness5=# create function maxexp() returns money as'
+declare m money;
+begin
+select max(amount) into m from expense;
+return m;
+end; '
+language 'plpgsql';
+CREATE FUNCTION
+buisness5=# select maxexp();
+   maxexp  
+------------
+ $25,000.00
+(1 row)
+
+
+
+buisness5=# create function tripcnt() returns int as $$
+declare c int;
+begin
+select count(trip_no) into c from trip where from_city='Pune' and to_city='Mumbai';
+return c;
+end; $$
+language 'plpgsql';
+CREATE FUNCTION
+buisness5=# select tripcnt();
+ tripcnt
+---------
