@@ -1,0 +1,679 @@
+Assignment 2 :
+
+
+postgres=# create database bank4;
+postgres=# \c bank4;
+psql (8.4.5)
+You are now connected to database "bank4".
+
+bank4=# create table branch(bid int primary key,bname varchar(30),bcity varchar(30));
+NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "branch_pkey" for table "branch"
+CREATE TABLE
+bank4=# create table customer(cno int primary key,cname varchar(30),caddr varchar(30),ccity varchar(20));
+NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "customer_pkey" for table "customer"
+CREATE TABLE
+bank4=# create table la(lano int primary key,reqmoney text,appmoney text,ladate date);
+NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "la_pkey" for table "la"
+CREATE TABLE
+
+bank4=# select * from branch;
+ bid | bname | bcity
+-----+-------+-------
+(0 rows)
+
+bank4=# select * from customer;
+ cno | cname | caddr | ccity
+-----+-------+-------+-------
+(0 rows)
+
+bank4=# select * from la;
+ lano | reqmoney | appmoney | ladate
+------+----------+----------+--------
+(0 rows)
+
+bank4=# create table BCL(bid int references branch,cno int references customer,lano int references la);CREATE TABLE
+bank4=# select * from BCL;
+ bid | cno | lano
+-----+-----+------
+(0 rows)
+
+bank4=# insert into branch values(1001,'Aundh','Pune');
+INSERT 0 1
+bank4=# insert into branch values(1002,'Deccan','Pune');
+INSERT 0 1
+bank4=# insert into branch values(1003,'Peder Rd','Mumbai');
+INSERT 0 1
+bank4=# insert into branch values(1004,'Colaba','Mumbai');
+INSERT 0 1
+bank4=# insert into branch values(1005,'MG Rd','Pune');
+INSERT 0 1
+bank4=# insert into branch values(1007,'Laxmi Rd','Pune');
+INSERT 0 1
+bank4=# insert into branch values(1006,'Bibewadi','Pune');
+INSERT 0 1
+
+bank4=# insert into customer values(101,'Akshay','Aundh','Pune');
+INSERT 0 1
+bank4=# insert into customer values(102,'Patil','Sadhashiv Peth','Pune');
+INSERT 0 1
+bank4=# insert into customer values(103,'Joshi','Colaba','Mumbai');
+INSERT 0 1
+bank4=# insert into customer values(104,'Pandey','Colaba','Mumbai');
+INSERT 0 1
+bank4=# insert into customer values(105,'Deshpande','Deccan','Pune');
+INSERT 0 1
+bank4=# insert into customer values(106,'Dave','Karve Nagar','Pune');
+INSERT 0 1
+bank4=# insert into customer values(107,'Sharma','MG Rd','Pune');
+INSERT 0 1
+bank4=# insert into customer values(108,'Gambhir','MG Rd','Pune');
+INSERT 0 1
+bank4=# insert into customer values(109,'Kumar','MG Rd','Pune');
+INSERT 0 1
+bank4=# insert into customer values(110,'Rohan','MG Rd','Pune');
+INSERT 0 1
+
+bank4=# insert into la values(2001,'10lakh','8lakh','2013-09-09');
+INSERT 0 1
+bank4=# insert into la values(2002,'15lakh','15lakh','2012-09-09');
+INSERT 0 1
+bank4=# insert into la values(2003,'5lakh','4lakh','2013-08-19');
+INSERT 0 1
+bank4=# insert into la values(2004,'2lakh','2lakh','2013-09-29');
+INSERT 0 1
+bank4=# insert into la values(2005,'1lakh','1lakh','2013-02-28');
+INSERT 0 1
+bank4=# insert into la values(2006,'7lakh','6lakh','2013-09-28');
+INSERT 0 1
+bank4=# insert into la values(2007,'6lakh','6lakh','2013-09-21');
+INSERT 0 1
+bank4=# insert into la values(2008,'4lakh','3lakh','2014-02-21');
+INSERT 0 1
+bank4=# insert into la values(2009,'5lakh','3lakh','2014-03-21');
+INSERT 0 1
+bank4=# insert into la values(2010,'10lakh','8lakh','2014-07-11');
+INSERT 0 1
+
+bank4=# select * from branch;
+ bid  |  bname   | bcity 
+------+----------+--------
+ 1001 | Aundh    | Pune
+ 1002 | Deccan   | Pune
+ 1003 | Peder Rd | Mumbai
+ 1004 | Colaba   | Mumbai
+ 1005 | MG Rd    | Pune
+ 1007 | Laxmi Rd | Pune
+ 1006 | Bibewadi | Pune
+(7 rows)
+
+bank4=# select * from customer;
+ cno |   cname   |     caddr      | ccity 
+-----+-----------+----------------+--------
+ 101 | Akshay    | Aundh          | Pune
+ 102 | Patil     | Sadhashiv Peth | Pune
+ 103 | Joshi     | Colaba         | Mumbai
+ 104 | Pandey    | Colaba         | Mumbai
+ 105 | Deshpande | Deccan         | Pune
+ 106 | Dave      | Karve Nagar    | Pune
+ 107 | Sharma    | MG Rd          | Pune
+ 108 | Gambhir   | MG Rd          | Pune
+ 109 | Kumar     | MG Rd          | Pune
+ 110 | Rohan     | MG Rd          | Pune
+(10 rows)
+
+bank4=# update la set appmoney='$10000' where lano=2001;
+UPDATE 1
+bank4=# update la set appmoney='$20000' where lano=2002;
+UPDATE 1
+bank4=# select max(appmoney) from la;
+    max    
+------------
+ $20,000.00
+(1 row)
+
+bank4=# update la set appmoney='$30000' where lano=2002;
+UPDATE 1
+bank4=# update la set appmoney='$30000' where lano=2003;
+UPDATE 1
+bank4=# update la set appmoney='$20000' where lano=2004;
+UPDATE 1
+bank4=# update la set appmoney='$25000' where lano=2005;
+UPDATE 1
+bank4=# update la set appmoney='$35000' where lano=2006;
+UPDATE 1
+bank4=# update la set appmoney='$50000' where lano=2007;
+UPDATE 1
+bank4=# update la set appmoney='$40000' where lano=2008;
+UPDATE 1
+bank4=# update la set appmoney='$45000' where lano=2009;
+UPDATE 1
+bank4=# update la set appmoney='$55000' where lano=2010;
+UPDATE 1
+bank4=# select * from la;
+ lano | reqmoney |   ladate   |  appmoney 
+------+----------+------------+------------
+ 2001 | 10lakh   | 2013-09-09 | $10,000.00
+ 2002 | 15lakh   | 2012-09-09 | $30,000.00
+ 2003 | 5lakh    | 2013-08-19 | $30,000.00
+ 2004 | 2lakh    | 2013-09-29 | $20,000.00
+ 2005 | 1lakh    | 2013-02-28 | $25,000.00
+ 2006 | 7lakh    | 2013-09-28 | $35,000.00
+ 2007 | 6lakh    | 2013-09-21 | $50,000.00
+ 2008 | 4lakh    | 2014-02-21 | $40,000.00
+ 2009 | 5lakh    | 2014-03-21 | $45,000.00
+ 2010 | 10lakh   | 2014-07-11 | $55,000.00
+(10 rows)
+
+bank4=#  alter table la drop reqmoney;
+ALTER TABLE
+bank4=#  alter table la add reqmoney money;
+ALTER TABLE
+
+bank4=# update la set reqmoney='$12000' where lano=2001;
+UPDATE 1
+bank4=# update la set reqmoney='$35000' where lano=2002;
+UPDATE 1
+bank4=# update la set reqmoney='$30000' where lano=2003;
+UPDATE 1
+bank4=# update la set reqmoney='$25000' where lano=2004;
+UPDATE 1
+bank4=# update la set reqmoney='$25000' where lano=2005;
+UPDATE 1
+bank4=# update la set reqmoney='$37000' where lano=2006;
+UPDATE 1
+bank4=# update la set reqmoney='$65000' where lano=2007;
+UPDATE 1
+bank4=# update la set reqmoney='$40000' where lano=2008;
+UPDATE 1
+bank4=# update la set reqmoney='$45000' where lano=2009;
+UPDATE 1
+bank4=# update la set reqmoney='$65000' where lano=2010;
+UPDATE 1
+
+bank4=# select * from la;
+ lano |   ladate   |  appmoney  |  reqmoney 
+------+------------+------------+------------
+ 2001 | 2013-09-09 | $10,000.00 | $12,000.00
+ 2002 | 2012-09-09 | $30,000.00 | $35,000.00
+ 2003 | 2013-08-19 | $30,000.00 | $30,000.00
+ 2004 | 2013-09-29 | $20,000.00 | $25,000.00
+ 2005 | 2013-02-28 | $25,000.00 | $25,000.00
+ 2006 | 2013-09-28 | $35,000.00 | $37,000.00
+ 2007 | 2013-09-21 | $50,000.00 | $65,000.00
+ 2008 | 2014-02-21 | $40,000.00 | $40,000.00
+ 2009 | 2014-03-21 | $45,000.00 | $45,000.00
+ 2010 | 2014-07-11 | $55,000.00 | $65,000.00
+(10 rows)
+
+
+bank4=# select * from BCL;
+ bid | cno | lano
+-----+-----+------
+(0 rows)
+
+bank4=# insert into BCL values(1001,101,2001);
+INSERT 0 1
+bank4=# insert into BCL values(1002,102,2002);
+INSERT 0 1
+bank4=# insert into BCL values(1003,103,2003);
+INSERT 0 1
+bank4=# insert into BCL values(1004,104,2004);
+INSERT 0 1
+bank4=# insert into BCL values(1005,107,2005);
+INSERT 0 1
+bank4=# insert into BCL values(1005,108,2006);
+INSERT 0 1
+bank4=# insert into BCL values(1005,109,2007);
+INSERT 0 1
+bank4=# insert into BCL values(1005,110,2008);
+INSERT 0 1
+bank4=# insert into BCL values(1006,105,2009);
+INSERT 0 1
+bank4=# insert into BCL values(1007,106,2010);
+INSERT 0 1
+
+bank4=# select * from BCL;
+ bid  | cno | lano
+------+-----+------
+ 1001 | 101 | 2001
+ 1002 | 102 | 2002
+ 1003 | 103 | 2003
+ 1004 | 104 | 2004
+ 1005 | 107 | 2005
+ 1005 | 108 | 2006
+ 1005 | 109 | 2007
+ 1005 | 110 | 2008
+ 1006 | 105 | 2009
+ 1007 | 106 | 2010
+(10 rows)
+
+bank4=# select cname from customer where cno in(select cno from BCL where bid in(select bid from branch where bid=1001));
+ cname 
+--------
+ Akshay
+(1 row)
+
+bank4=# select cname from customer where cno in(select cno from BCL where lano in(select lano from la where appmoney
+  cname 
+---------
+ Akshay
+ Patil
+ Pandey
+ Dave
+ Gambhir
+ Kumar
+(6 rows)
+
+bank4=# select max(appmoney) from la;
+    max    
+------------
+ $55,000.00
+(1 row)
+
+bank4=# select sum(appmoney) from la where lano in(select lano from BCL where bid in(select bid from branch where bid=1002));
+    sum    
+------------
+ $30,000.00
+(1 row)
+
+bank4=# select count(cname) from customer where cno in(select cno from BCL where bid in(select bid from branch where bid=1005));
+ count
+-------
+     4
+(1 row)
+
+
+bank4=# select cname,bname from customer,branch,la,BCL where customer.cno=BCL.cno AND branch.bid=BCL.bid AND la.lano=BCL.lano AND extract(month from ladate)=09;
+  cname  | bname 
+---------+--------
+ Akshay  | Aundh
+ Patil   | Deccan
+ Pandey  | Colaba
+ Gambhir | MG Rd
+ Kumar   | MG Rd
+(5 rows)
+
+=============================================================================
+postgres=# create database student4
+postgres-# ;
+
+
+CREATE DATABASE
+postgres=#
+postgres=#
+postgres=# \c
+psql (8.4.5)
+You are now connected to database "postgres".
+postgres=# \c student4
+psql (8.4.5)
+You are now connected to database "student4".
+student4=# create table student(sno int primary key,sname varchar(30),sclass varchar(10),saddrs varchar(50));
+NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "student_pkey" for table "student"
+CREATE TABLE
+student4=# create table teacher(tno int primary key,tname varchar(30),qualification varchar(10),experience int);
+NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "teacher_pkey" for table "teacher"
+CREATE TABLE
+student4=# create table ST(sno int references student,tno int references teacher,subject varchar(20));
+CREATE TABLE
+student4=# insert into student values(101,'Pratik','FY','Pune');
+INSERT 0 1
+student4=# insert into student values(102,'Harshal','FY','Pune');
+INSERT 0 1
+student4=# insert into student values(103,'Suresh','SY','Pune');
+INSERT 0 1
+student4=# insert into student values(104,'Ramesh','SY','Mumbai');
+INSERT 0 1
+student4=# insert into student values(105,'Jayesh','SY','Mumbai');
+INSERT 0 1
+student4=# insert into student values(106,'Rakesh','SY','Mumbai');
+INSERT 0 1
+student4=# insert into student values(107,'Vikesh','TY','Pune');
+INSERT 0 1
+student4=# insert into student values(108,'Mikesh','TY','Pune');
+INSERT 0 1
+student4=# insert into student values(109,'Mitesh','TY','Pune');
+INSERT 0 1
+student4=# insert into student values(110,'Priyesh','TY','Pune');
+INSERT 0 1
+
+student4=# insert into teacher values(01,'Mr.Joshi','Bsc',3);
+INSERT 0 1
+student4=# insert into teacher values(02,'Mr.Navle','Msc',5);
+INSERT 0 1
+student4=# insert into teacher values(03,'Mrs.Joshi','Bca',2);
+INSERT 0 1
+student4=# insert into teacher values(04,'Mrs.Patil','Mca',5);
+INSERT 0 1
+student4=# insert into teacher values(05,'Mr.Patil','Bca',1);
+INSERT 0 1
+
+student4=# select * from student
+student4-# ;
+ sno |  sname  | sclass | saddrs
+-----+---------+--------+--------
+ 101 | Pratik  | FY     | Pune
+ 102 | Harshal | FY     | Pune
+ 103 | Suresh  | SY     | Pune
+ 104 | Ramesh  | SY     | Mumbai
+ 105 | Jayesh  | SY     | Mumbai
+ 106 | Rakesh  | SY     | Mumbai
+ 107 | Vikesh  | TY     | Pune
+ 108 | Mikesh  | TY     | Pune
+ 109 | Mitesh  | TY     | Pune
+ 110 | Priyesh | TY     | Pune
+(10 rows)
+
+student4=# select * from teacher;
+ tno |   tname   | qualification | experience
+-----+-----------+---------------+------------
+   1 | Mr.Joshi  | Bsc           |          3
+   2 | Mr.Navle  | Msc           |          5
+   3 | Mrs.Joshi | Bca           |          2
+   4 | Mrs.Patil | Mca           |          5
+   5 | Mr.Patil  | Bca           |          1
+(5 rows)
+
+student4=# insert into ST values(101,01,'DS');
+INSERT 0 1
+student4=# insert into ST values(102,01,'DS');
+INSERT 0 1
+student4=# insert into ST values(103,01,'RDBMS');
+INSERT 0 1
+student4=# insert into ST values(103,02,'RDBMS');
+INSERT 0 1
+student4=# insert into ST values(103,03,'DS');
+INSERT 0 1
+student4=# insert into ST values(104,04,'DS');
+INSERT 0 1
+student4=# insert into ST values(105,05,'DS');
+INSERT 0 1
+student4=# insert into ST values(106,05,'DS');
+INSERT 0 1
+student4=# insert into ST values(107,05,'DBMS');
+INSERT 0 1
+student4=# insert into ST values(108,05,'DBMS');
+INSERT 0 1
+student4=# insert into ST values(109,04,'DBMS');
+INSERT 0 1
+student4=# insert into ST values(110,01,'DS');
+INSERT 0 1
+
+student4=# update teacher set qualification='Ph.D' where tno=3;
+UPDATE 1
+student4=# update teacher set qualification='BCA' where tno=3;
+UPDATE 1
+student4=# update teacher set qualification='Ph.D' where tno=2;
+UPDATE 1
+student4=# update teacher set qualification='Ph.D' where tno=4;
+UPDATE 1
+student4=# select * from teacher;
+ tno |   tname   | qualification | experience
+-----+-----------+---------------+------------
+   1 | Mr.Joshi  | Bsc           |          3
+   5 | Mr.Patil  | Bca           |          1
+   3 | Mrs.Joshi | BCA           |          2
+   2 | Mr.Navle  | Ph.D          |          5
+   4 | Mrs.Patil | Ph.D          |          5
+(5 rows)
+
+student4=# select * from ST;
+ sno | tno | subject
+-----+-----+---------
+ 101 |   1 | DS
+ 102 |   1 | DS
+ 103 |   1 | RDBMS
+ 103 |   2 | RDBMS
+ 103 |   3 | DS
+ 104 |   4 | DS
+ 105 |   5 | DS
+ 106 |   5 | DS
+ 107 |   5 | DBMS
+ 108 |   5 | DBMS
+ 109 |   4 | DBMS
+ 110 |   1 | DS
+(12 rows)
+
+student4=# select tname from teacher where experience in(select min(experience) from teacher);
+  tname  
+----------
+ Mr.Patil
+(1 row)
+
+student4=# select count(tname) from teacher group by qualification having qualification='Ph.D';
+ count
+-------
+     2
+(1 row)
+
+student4=# select distinct(tname),subject from teacher,ST where teacher.tno=ST.tno AND teacher.tno in(select tno from ST group by tno);
+   tname   | subject
+-----------+---------
+ Mrs.Joshi | DS
+ Mrs.Patil | DBMS
+ Mr.Joshi  | DS
+ Mr.Patil  | DBMS
+ Mr.Patil  | DS
+ Mrs.Patil | DS
+ Mr.Navle  | RDBMS
+ Mr.Joshi  | RDBMS
+(8 rows)
+
+student4=# select sname,subject from student,ST where student.sno=ST.sno and tno in(select tno from teacher where tname='Mr.Patil');
+ sname  | subject
+--------+---------
+ Jayesh | DS
+ Rakesh | DS
+ Vikesh | DBMS
+ Mikesh | DBMS
+(4 rows)
+
+student4=# select tname from teacher where tno in(select tno from ST Where sno in(select sno from student where sname='Suresh'));
+   tname  
+-----------
+ Mr.Joshi
+ Mrs.Joshi
+ Mr.Navle
+(3 rows)
+
+
+student4=# select tname,count(sno) from teacher,ST where teacher.tno=ST.tno  group by tname;
+   tname   | count
+-----------+-------
+ Mrs.Patil |     2
+ Mr.Patil  |     4
+ Mrs.Joshi |     1
+ Mr.Navle  |     1
+ Mr.Joshi  |     4
+(5 rows)
+
+student4=#
+============================================================================
+
+postgres=# create database Project4;
+^[[B^[[CREATE DATABASE
+postgres=# \c project4;
+psql (8.4.5)
+You are now connected to database "project4".
+project4=# create table project(pno int primary key,pname varchar(20),ptype varchar(20),duration int);
+NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "project_pkey" for table "project"
+CREATE TABLE
+project4=# create table employee(eno int primary key,ename varchar(20),qualification varchar(20),joindate date);
+NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "employee_pkey" for table "employee"
+CREATE TABLE
+project4=# create table PE(pno int references project,eno int references employee,startdate date,hours int);
+CREATE TABLE
+project4=# insert int project values(1000,'Danish','Educational',3);
+
+project4=# insert into project values(1000,'Danish','Educational',3);
+INSERT 0 1
+project4=# insert into project values(1500,'Satish','Industrial',5);
+INSERT 0 1
+project4=# insert into project values(2000,'Alok','Industrial',4);
+INSERT 0 1
+project4=# insert into project values(2500,'Amol','Industrial',2);
+INSERT 0 1
+project4=# update project set pname='Electronics' where pno=1000;
+UPDATE 1
+project4=# update project set pname='System' where pno=1500;
+UPDATE 1
+project4=# update project set pname='Robotics' where pno=2000;
+UPDATE 1
+project4=# update project set pname='Networks' where pno=2500;
+UPDATE 1
+project4=# insert into project values(3000,'Database','Industrial',1);
+INSERT 0 1
+project4=# select * from project
+project4-# ;
+ pno  |    pname    |    ptype    | duration
+------+-------------+-------------+----------
+ 1000 | Electronics | Educational |        3
+ 1500 | System      | Industrial  |        5
+ 2000 | Robotics    | Industrial  |        4
+ 2500 | Networks    | Industrial  |        2
+ 3000 | Database    | Industrial  |        1
+(5 rows)
+
+project4=# update project set pno=101 where pno=1000;
+UPDATE 1
+project4=# update project set pno=102 where pno=1500;
+UPDATE 1
+project4=# update project set pno=103 where pno=2000;
+UPDATE 1
+project4=# update project set pno=104 where pno=2500;
+UPDATE 1
+project4=# update project set pno=105 where pno=3000;
+UPDATE 1
+project4=# select * from project;
+ pno |    pname    |    ptype    | duration
+-----+-------------+-------------+----------
+ 101 | Electronics | Educational |        3
+ 102 | System      | Industrial  |        5
+ 103 | Robotics    | Industrial  |        4
+ 104 | Networks    | Industrial  |        2
+ 105 | Database    | Industrial  |        1
+(5 rows)
+
+project4=# insert into employee values(1000,'Danish','BE.Mech','2011-11-21');
+INSERT 0 1
+project4=# insert into employee values(1500,'Satish','BE.Mech','2010-01-01');
+INSERT 0 1
+project4=# insert into employee values(2000,'Amol','BCS','2012-06-01');
+INSERT 0 1
+project4=# insert into employee values(2500,'Amok','BCS','2013-02-01');
+INSERT 0 1
+project4=# insert into employee values(3000,'Nitesh','MCS','2012-08-01');
+INSERT 0 1
+project4=# insert into employee values(3500,'Mohit','MCA','2011-05-01');
+INSERT 0 1
+project4=# insert into employee values(4000,'Akshay','MCS','2010-09-05');
+INSERT 0 1
+project4=# insert into employee values(4500,'Kiran','BCA','2014-01-01');
+INSERT 0 1
+project4=# select * from employee;
+ eno  | ename  | qualification |  joindate 
+------+--------+---------------+------------
+ 1000 | Danish | BE.Mech       | 2011-11-21
+ 1500 | Satish | BE.Mech       | 2010-01-01
+ 2000 | Amol   | BCS           | 2012-06-01
+ 2500 | Amok   | BCS           | 2013-02-01
+ 3000 | Nitesh | MCS           | 2012-08-01
+ 3500 | Mohit  | MCA           | 2011-05-01
+ 4000 | Akshay | MCS           | 2010-09-05
+ 4500 | Kiran  | BCA           | 2014-01-01
+(8 rows)
+
+project4=# select * from project;
+ pno |    pname    |    ptype    | duration
+-----+-------------+-------------+----------
+ 101 | Electronics | Educational |        3
+ 102 | System      | Industrial  |        5
+ 103 | Robotics    | Industrial  |        4
+ 104 | Networks    | Industrial  |        2
+ 105 | Database    | Industrial  |        1
+(5 rows)
+
+project4=# select * from PE;
+ pno | eno | startdate | hours
+-----+-----+-----------+-------
+(0 rows)
+
+project4=# insert into PE values(101,1000,'2014-01-21',10);
+INSERT 0 1
+project4=# insert into PE values(101,1500,'2014-01-21',10);
+INSERT 0 1
+project4=# insert into PE values(102,2000,'2013-11-11',15);
+INSERT 0 1
+project4=# insert into PE values(102,3000,'2013-11-11',15);
+INSERT 0 1
+project4=# insert into PE values(103,2500,'2014-05-11',35);
+INSERT 0 1
+project4=# insert into PE values(103,3500,'2014-05-11',35);
+INSERT 0 1
+
+
+project4=# select * from PE;
+ pno | eno  | startdate  | hours
+-----+------+------------+-------
+ 101 | 1000 | 2014-01-21 |    10
+ 101 | 1500 | 2014-01-21 |    10
+ 102 | 2000 | 2013-11-11 |    15
+ 102 | 3000 | 2013-11-11 |    15
+ 103 | 2500 | 2014-05-11 |    35
+ 103 | 3500 | 2014-05-11 |    35
+ 104 | 4000 | 2014-11-11 |    11
+ 105 | 4500 | 2014-01-11 |    18
+(8 rows)
+
+project4=# select ename from employee where ename like 'A%';
+ ename 
+--------
+ Amol
+ Amok
+ Akshay
+(3 rows)
+
+
+project4=# select * from employee where eno in(select eno from PE where PE.pno in(select pno from project where pname='System'));
+ eno  | ename  | qualification |  joindate 
+------+--------+---------------+------------
+ 2000 | Amol   | BCS           | 2012-06-01
+ 3000 | Nitesh | MCS           | 2012-08-01
+(2 rows)
+
+project4=# select eno from employee where eno in(select eno from PE where PE.pno in(select pno from project where pname!='Robotics'));
+ eno 
+------
+ 1000
+ 1500
+ 2000
+ 3000
+ 4000
+ 4500
+(6 rows)
+
+
+project4=# select eno from employee where eno in(select eno from PE where pno in(select pno from PE where eno=2000));
+ eno 
+------
+ 2000
+ 3000
+(2 rows)
+
+
+
+project4=# select ename from employee order by ename limit 3;
+ ename 
+--------
+ Akshay
+ Amok
+ Amol
+(3 rows)
+
+project4=# select ename from employee where eno in(select eno from PE where pno in(select pno from project where duration>3));
+ ename 
+--------
+ Amol
+ Amok
+ Nitesh
+ Mohit
+(4 rows)
