@@ -184,3 +184,535 @@ NOTICE:  description:Laminate
 ------
 
 (1 row)
+
+
+ Assignment 5 Cursor : SET B
+
+postgres=# \c company4
+psql (8.4.5)
+You are now connected to database "company4".
+company4=# create table company(name varchar(20) primary key,add varchar(50),phone varchar(20),share_value money);NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "company_pkey" for table "company"
+CREATE TABLE
+company4=# create table person(pname varchar(30) primary key,pcity varchar(20));NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "person_pkey" for table "person"
+CREATE TABLE
+company4=# create table cp(name varchar(30) references company(name) on delete cascade,pname varchar(30) references person(pname) on delete cascade,nos_of_share int);
+CREATE TABLE
+company4=# \d
+          List of relations
+ Schema |  Name   | Type  |  Owner  
+--------+---------+-------+----------
+ public | company | table | postgres
+ public | cp      | table | postgres
+ public | person  | table | postgres
+(3 rows)
+
+company4=# insert into company values('infosys','abc','020-665544','$5000000');
+INSERT 0 1
+company4=# insert into company values('infosystem','abc','020-665545','$6000000');
+INSERT 0 1
+company4=# insert into company values('info','pune','020-665545','$7000000');
+INSERT 0 1
+company4=# insert into company values('infotec','pune','020-665543','$5500000');
+INSERT 0 1
+company4=# insert into company values('wipro','pune','020-665345','$6500000');
+INSERT 0 1
+company4=# insert into person values('Rahul','pune');
+INSERT 0 1
+company4=# insert into person values('Vidhyadhar','pune');
+INSERT 0 1
+company4=# insert into person values('sachin','mumbai');
+INSERT 0 1
+company4=# insert into person values('darshan','mumbai');
+INSERT 0 1
+company4=# insert into person values('shiva','mumbai');
+INSERT 0 1
+company4=# insert into cp values('infosys','Rahul',10);
+INSERT 0 1
+company4=# insert into cp values('infosystem','Vidhyadhar',25);
+INSERT 0 1
+company4=# insert into cp values('infotec','darshan',5);
+INSERT 0 1
+company4=# insert into cp values('info','sachin',15);
+INSERT 0 1
+company4=# insert into cp values('wipro','shiva',12);
+INSERT 0 1
+company4=# select * from company;
+    name    | add  |   phone    |  share_value 
+------------+------+------------+---------------
+ infosys    | abc  | 020-665544 | $5,000,000.00
+ infosystem | abc  | 020-665545 | $6,000,000.00
+ info       | pune | 020-665545 | $7,000,000.00
+ infotec    | pune | 020-665543 | $5,500,000.00
+ wipro      | pune | 020-665345 | $6,500,000.00
+(5 rows)
+
+company4=# select * from person;
+   pname    | pcity 
+------------+--------
+ Rahul      | pune
+ Vidhyadhar | pune
+ sachin     | mumbai
+ darshan    | mumbai
+ shiva      | mumbai
+(5 rows)
+
+company4=# select * from cp;
+    name    |   pname    | nos_of_share
+------------+------------+--------------
+ infosys    | Rahul      |           10
+ infosystem | Vidhyadhar |           25
+ infotec    | darshan    |            5
+ info       | sachin     |           15
+ wipro      | shiva      |           12
+(5 rows)
+
+company4=# select count(pname),sum(share_value) from person,company;
+ count |       sum      
+-------+-----------------
+    25 | $150,000,000.00
+(1 row)
+
+company4=# select sum(share_value) from person,company;
+       sum      
+-----------------
+ $150,000,000.00
+(1 row)
+
+company4=# select count(cp.pname),sum(share_value) from person,company,cp where person.pname=cp.pname and company.name=cp.name;
+ count |      sum      
+-------+----------------
+     5 | $30,000,000.00
+(1 row)
+
+2)
+
+company4=# create function f11()returns void as '
+declare c10 cursor for select count(cp.name),sum(share_value) from person,company,cp where person.pname=cp.pname and company.name=cp.name;
+cnt int;
+sm money;
+begin
+open c10;
+loop
+fetch c10 into cnt,sm;
+exit when not found;
+raise notice''Count : %'',cnt;
+raise notice''Sm : %'',sm;
+end loop;
+close c10;
+end '
+language 'plpgsql';
+
+CREATE FUNCTION
+company4=# select f11();
+NOTICE:  Count : 5
+NOTICE:  Sm : $30,000,000.00
+ f11
+-----
+
+(1 row)
+
+1)
+
+company4=# create function b11()returns void as '
+declare cb1 cursor for select pname,nos_of_share from cp where pname=''sachin'';
+p varchar(30);
+n int;
+begin
+open cb1;
+loop
+fetch cb1 into p,n;
+exit when not found;
+update cp set nos_of_share=nos_of_share+n where pname=''Rahul'';
+update cp set nos_of_share=nos_of_share-n where pname=p;
+end loop;
+close cb1;
+end '
+language 'plpgsql';
+CREATE FUNCTION
+
+company4=# select b11();
+ b11
+-----
+
+(1 row)
+
+company4=# select * from cp;
+    name    |   pname    | nos_of_share
+------------+------------+--------------
+ infosystem | Vidhyadhar |           25
+ infotec    | darshan    |            5
+ wipro      | shiva      |           12
+ infosys    | Rahul      |           25
+ info       | sachin     |            0
+(5 rows)
+
+ RDBMS_PRACT_5_C
+
+
+Assignment 5 Cursor : SET C
+
+marks4=# select * from student;
+ rno | name |     addrs      | class
+-----+-----+---------------+------
+ 101 | ABC  | Sadhashiv Peth | Fy
+ 102 | DEF  | Sadhashiv Peth | Fy
+ 103 | GHI  | Sadhashiv Peth | Fy
+ 104 | JKL  | Nana Peth      | Sy
+ 105 | MNO  | Nana Peth      | Sy
+(5 rows)
+
+marks4=# select * from subject;
+ scode |    sname    
+-------+-------------
+ 1     | Science
+ 2     | Comp.Science
+ 3     | Electronics
+(3 rows)
+
+marks4=# select * from ss;
+ rno | scode | marks
+-----+------+------
+ 101 | 1     |    80
+ 102 | 1     |    85
+ 103 | 1     |    81
+ 104 | 2     |    76
+ 105 | 3     |    71
+ 104 | 1     |    69
+ 105 | 1     |    79
+ 101 | 2     |    79
+ 101 | 3     |    89
+ 102 | 2     |    71
+ 102 | 3     |    72
+ 103 | 2     |    76
+ 103 | 3     |    64
+ 104 | 3     |    69
+ 105 | 2     |    89
+(15 rows)
+
+marks4=#
+
+
+1)
+
+marks4=# create function c1(addrs varchar(20))returns void as '
+declare c11 cursor for select name,subject,marks from student,subject,ss where student.rno=ss.rno and subject.scode=ss.scode and addrs=''Sadhashiv Peth'';
+n varchar(20);
+s varchar(20);
+m int;
+begin
+open c11;
+loop
+fetch c11 into n,s,m;
+exit when not found;
+raise notice''Name:%'',n;
+raise notice''Subject Name:%'',s;
+raise notice''Marks:%'',m;
+end loop;
+close c11;
+end '
+language 'plpgsql';
+CREATE FUNCTION
+
+marks4=# select c1('Sadhashib Peth');
+ c1
+----
+
+(1 row)
+
+marks4=# select c1('Sadhashiv Peth');
+NOTICE:  Name:ABC
+NOTICE:  Subject Name:(1,Science)
+NOTICE:  Marks:80
+NOTICE:  Name:DEF
+NOTICE:  Subject Name:(1,Science)
+NOTICE:  Marks:85
+NOTICE:  Name:GHI
+NOTICE:  Subject Name:(1,Science)
+NOTICE:  Marks:81
+NOTICE:  Name:JKL
+NOTICE:  Subject Name:(2,Comp.Science)
+NOTICE:  Marks:76
+NOTICE:  Name:MNO
+NOTICE:  Subject Name:(3,Electronics)
+NOTICE:  Marks:71
+ c1
+----
+
+(1 row)
+
+2)
+
+marks4=# create function c22()returns void as '
+declare c21 cursor for select rno,count(scode),sum(marks) from ss group by rno;
+r int;
+s int;
+m int;
+p float;
+begin
+open c21;
+loop
+fetch c21 into r,s,m;
+exit when not found;
+p=(m*100)/(s*100);
+raise notice''Roll Nos :% '',r;
+raise notice''Total : %'',m;
+raise notice''Percentage:%'',p;
+end loop;
+close c21;
+end '
+language 'plpgsql';
+CREATE FUNCTION
+
+marks4=# select c22();
+
+NOTICE:  Roll Nos :103
+NOTICE:  Total : 221
+NOTICE:  Percentage:73
+NOTICE:  Roll Nos :101
+NOTICE:  Total : 248
+NOTICE:  Percentage:82
+NOTICE:  Roll Nos :105
+NOTICE:  Total : 239
+NOTICE:  Percentage:79
+NOTICE:  Roll Nos :104
+NOTICE:  Total : 214
+NOTICE:  Percentage:71
+NOTICE:  Roll Nos :102
+NOTICE:  Total : 228
+NOTICE:  Percentage:76
+ c22
+-----
+
+(1 row)
+
+
+
+Assignment 5 Cursor : SET D
+
+railway4=# \d
+           List of relations
+ Schema |   Name    | Type  |  Owner  
+--------+-----------+-------+----------
+ public | passenger | table | postgres
+ public | ticket    | table | postgres
+ public | train     | table | postgres
+(3 rows)
+
+railway4=# select * from passenger;
+ pid |   pname    | addr | age | gender
+-----+------------+------+-----+--------
+  11 | mr jadhav  | abc  |  20 | male
+  22 | mr patil   | xyz  |  30 | male
+  33 | mrs patil  | xyz  |  40 | female
+  44 | mrs jadhav | sty  |  50 | female
+(4 rows)
+
+railway4=# select * from ticket;
+ tno | pid | ticket_no | b_no | no_berths |    date    | ticket_amt | status |     da    
+-----+-----+-----------+------+-----------+------------+------------+--------+------------
+ 101 |  11 |         1 |   12 |         5 | 2009-05-03 |            |        |
+ 102 |  22 |         2 |   15 |         3 | 2009-04-02 |            |        |
+ 104 |  44 |         5 |   12 |         5 | 2010-05-03 |    4000.00 | w      |
+ 102 |  22 |         6 |   12 |         5 | 2010-03-03 |    4000.00 | w      |
+ 103 |  33 |         4 |   12 |         5 | 2010-05-03 |    2000.00 | c      | 2010-05-03
+ 101 |  11 |         3 |   12 |         5 | 2010-05-03 |    2500.00 | w      |
+(6 rows)
+
+railway4=# select * from train;
+ tno |      tname      |  d_time  |  a_time  | s_stin | dest_stin | no_of_bogies | bogies_capacity
+-----+-----------------+----------+----------+--------+-----------+--------------+-----------------
+ 101 | chennai express | 11:00:00 | 21:30:00 | abc    | xyz       |           12 |              45
+ 102 | mumbai express  | 12:00:00 | 21:30:00 | def    | pqr       |           20 |              60
+ 103 | pune express    | 12:00:00 | 22:30:00 | jkl    | stu       |           30 |              60
+ 104 | express         | 12:00:00 | 22:30:00 | mno    | ghi       |           40 |              80
+(4 rows)
+
+railway4=#
+
+1)
+
+railway4=# create function fu1()returns void as '
+declare cf1 cursor for select pname from passenger where pid in(select pid from ticket where da=''2010-05-03'' and status=''c'');
+paname char(20);
+begin
+open cf1;
+loop
+fetch cf1 into paname;
+exit when not found;
+raise notice ''Passenger Name: %'',paname;
+end loop;
+close cf1;
+end '
+language 'plpgsql';
+CREATE FUNCTION
+
+railway4=# select fu1();
+NOTICE:  Passenger Name: mrs patil           
+ fu1
+-----
+
+(1 row)
+
+2)
+
+railway4=# create function fu4()returns void as '
+declare cf2 cursor for select count(pname) from passenger where pid in(select pid from ticket where date=''2010-05-03'' and status=''w'');
+cnt int;
+begin
+open cf2;
+loop
+fetch cf2 into cnt;
+exit when not found;
+raise notice ''Total: %'',cnt;
+end loop;
+close cf2;
+end '
+language 'plpgsql';
+CREATE FUNCTION
+railway4=# select fu4();
+NOTICE:  Total: 2
+ fu4
+-----
+
+
+Assignment 5 Cursor : SET E
+
+buss4=# \d
+         List of relations
+ Schema |  Name  | Type  |  Owner  
+--------+--------+-------+----------
+ public | bd     | table | postgres
+ public | bus    | table | postgres
+ public | driver | table | postgres
+ public | route  | table | postgres
+(4 rows)
+
+buss4=# select * from bd
+buss4-# ;
+ bno | dno | duty_date  | shift
+-----+-----+------------+-------
+  11 |   1 | 2009-05-03 | m
+  22 |   2 | 2009-04-03 | e
+  33 |   3 | 2009-03-03 | m
+(3 rows)
+
+buss4=# select * from bus;
+ bno | capacity |   dname    | rno
+-----+----------+------------+-----
+  11 |       40 | shivam     | 101
+  22 |       30 | shivshakti | 102
+  33 |       50 | shiv       | 103
+(3 rows)
+
+buss4=# select * from driver;
+ dno |   dname   | licenes_no |         addr         | d_age | salary
+-----+-----------+------------+----------------------+-------+--------
+   1 | darshan   |        100 | aba                  |    30 |   2000
+   2 | vidya     |        200 | abb                  |    20 |   4000
+   3 | vidyadhar |        300 | bbb                  |    40 |   5000
+(3 rows)
+
+buss4=# select * from route;
+ rno |        source        |     destination      | no_of_stations
+-----+----------------------+----------------------+----------------
+ 101 | xyz                  | abc                  |              2
+ 102 | pqr                  | efg                  |              3
+ 103 | uvw                  | hij                  |              5
+(3 rows)
+
+buss4=# select dname,licenes_no,salary from driver;
+   dname   | licenes_no | salary
+-----------+------------+--------
+ darshan   |        100 |   2000
+ vidya     |        200 |   4000
+ vidyadhar |        300 |   5000
+(3 rows)
+
+buss4=# \d driver;
+             Table "public.driver"
+   Column   |         Type          | Modifiers
+------------+-----------------------+-----------
+ dno        | integer               | not null
+ dname      | character varying(20) |
+ licenes_no | integer               |
+ addr       | character(20)         |
+ d_age      | integer               |
+ salary     | double precision      |
+
+1)
+
+buss4=# create function e1(dname varchar(20))returns void as '
+declare e11 cursor for select dname,licenes_no,salary from driver;
+n varchar(20);
+l int;
+s float;
+begin
+open e11;
+loop
+fetch e11 into n,l,s;
+exit when not found;
+raise notice''Driver Name:%'',n;
+raise notice''Licenes Nos:%'',l;
+raise notice''Salary:%'',s;
+end loop;
+close e11;
+end '
+language 'plpgsql';
+CREATE FUNCTION
+
+buss4=# select e1('darshan');
+NOTICE:  Driver Name:darshan
+NOTICE:  Licenes Nos:100
+NOTICE:  Salary:2000
+NOTICE:  Driver Name:darshan
+NOTICE:  Licenes Nos:200
+NOTICE:  Salary:4000
+NOTICE:  Driver Name:darshan
+NOTICE:  Licenes Nos:300
+NOTICE:  Salary:5000
+ e1
+----
+
+(1 row)
+
+2)
+
+buss4=# create function e2()returns void as '
+declare e21 cursor for select source,destination from route where rno=101;
+declare e22 cursor for select source,destination from route where rno=102;
+s char(20);
+d char(20);
+sa char(20);
+da char(20);
+begin
+open e21;
+loop
+fetch e21 into s,d;
+exit when not found;
+raise notice''Source:%'',s;
+raise notice''Destination:%'',d;
+end loop;
+close e21;
+open e22;
+loop
+fetch e22 into sa,da;
+exit when not found;
+raise notice''Source:%'',sa;
+raise notice''Destinatio:%'',da;
+end loop;
+close e22;
+end '
+language 'plpgsql';
+CREATE FUNCTION
+
+buss4=# select e2();
+NOTICE:  Source:xyz                
+NOTICE:  Destination:abc                
+NOTICE:  Source:pqr                
+NOTICE:  Destinatio:efg                
+ e2
+----
+
+(1 row)
+
+buss4=#
