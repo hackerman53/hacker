@@ -1,0 +1,163 @@
+ RDBMS_PRACT_3_C
+
+
+Assignment 3 :SET C
+
+project4=# \c buisness4;
+psql (8.4.5)
+You are now connected to database "buisness4".
+buisness4=# select * from salesmen;
+ s_no |             s_name             | start_year | dept_no
+------+--------------------------------+------------+---------
+  101 | Mr.Patil                       |       2001 | c1
+  102 | Mr.Sharma                      |       2003 | c2
+  103 | Mr.Rathod                      |       2005 | c2
+  104 | Mr.Malhotra                    |       2007 | c3
+  105 | Mr.Kulkarni                    |       2010 | c4
+  106 | Mr.Shah                        |       2014 | c5
+  107 | Mr.Das                         |       2010 | c3
+  108 | Mr.Chawan                      |       2009 | c1
+(8 rows)
+
+buisness4=# select * from trip;
+ trip_no |      from_city       |       to_city        | departure_date | return_date | s_no
+---------+----------------------+----------------------+----------------+-------------+------
+     111 | Pune                 | Calcutta             | 2014-11-18     | 2014-11-25  |  101
+     112 | Mumbai               | Calcutta             | 2012-08-01     | 2012-08-10  |  108
+     114 | Banglore             | Mumbai               | 2009-11-03     | 2009-11-15  |  104
+     115 | Pune                 | Delhi                | 2011-03-26     | 2011-03-30  |  106
+     116 | Chennai              | Mysore               | 2010-06-04     | 2010-06-15  |  101
+     117 | Agra                 | Mumbai               | 2008-08-15     | 2008-08-20  |  107
+(6 rows)
+
+buisness4=# select * from department;
+ dept_no |      dept_name      
+---------+----------------------
+ c1      | Electronics        
+ c2      | Computer            
+ c3      | Statistics         
+ c4      | Mathematics        
+ c5      | English            
+(5 rows)
+
+buisness4=# select * from expense;
+ e_id |   amount   | trip_no
+------+------------+---------
+    1 | $21,000.00 |     111
+    2 | $23,000.00 |     112
+    4 | $10,000.00 |     114
+    5 | $25,000.00 |     115
+    6 | $15,000.00 |     116
+    7 |  $7,000.00 |     117
+(6 rows)
+
+
+buisness4=# create view v1 as select s_no,s_name,start_year from salesmen,department where salesmen.dept_no=department.dept_no and dept_name='Electronics';
+CREATE VIEW
+buisness4=# select * from v1;
+ s_no |             s_name             | start_year
+------+--------------------------------+------------
+  101 | Mr.Patil                       |       2001
+  108 | Mr.Chawan                      |       2009
+(2 rows)
+
+
+buisness4=# create view v2 as select salesmen.s_name,trip.trip_no,amount from salesmen,expense,trip where salesmen.s_no=trip.s_no and expense.trip_no=trip.trip_no;
+CREATE VIEW
+buisness4=# select * from v2;
+             s_name             | trip_no |   amount  
+--------------------------------+---------+------------
+ Mr.Patil                       |     111 | $21,000.00
+ Mr.Chawan                      |     112 | $23,000.00
+ Mr.Malhotra                    |     114 | $10,000.00
+ Mr.Shah                        |     115 | $25,000.00
+ Mr.Patil                       |     116 | $15,000.00
+ Mr.Das                         |     117 |  $7,000.00
+(6 rows)
+
+buisness4=# select * from v1 where start_year=2001;
+ s_no |             s_name             | start_year
+------+--------------------------------+------------
+  101 | Mr.Patil                       |       2001
+(1 row)
+
+buisness4=# select * from v1;
+ s_no |             s_name             | start_year
+------+--------------------------------+------------
+  101 | Mr.Patil                       |       2001
+  108 | Mr.Chawan                      |       2009
+(2 rows)
+
+buisness4=# select * from v2;
+             s_name             | trip_no |   amount  
+--------------------------------+---------+------------
+ Mr.Patil                       |     111 | $21,000.00
+ Mr.Chawan                      |     112 | $23,000.00
+ Mr.Malhotra                    |     114 | $10,000.00
+ Mr.Shah                        |     115 | $25,000.00
+ Mr.Patil                       |     116 | $15,000.00
+ Mr.Das                         |     117 |  $7,000.00
+(6 rows)
+
+buisness4=# select v1.s_name from v1,v2 where v1.s_name=v2.s_name;
+             s_name            
+--------------------------------
+ Mr.Patil                     
+ Mr.Chawan                    
+ Mr.Patil                     
+(3 rows)
+
+buisness4=# create view v3 as select salesmen.s_no,salesmen.s_name,trip.trip_no,amount from salesmen,expense,trip where salesmen.s_no=trip.s_no and expense.trip_no=trip.trip_no;
+CREATE VIEW
+
+buisness4=# select v1.s_name from v1,v3 where v1.s_no=v3.s_no and amount in(select sum(amount) from v3 group by trip_no buisness4=# select v1.s_name from v1,v3 where v1.s_no=v3.s_no and amount>'$10000';          
+  s_name            
+--------------------------------
+ Mr.Patil                     
+ Mr.Chawan                    
+ Mr.Patil                     
+(3 rows)
+
+buisness4=# select v1.s_name from v1,v3 where v1.s_no=v3.s_no and amount>'$21000';
+             s_name            
+--------------------------------
+ Mr.Chawan                    
+(1 row)
+
+buisness4=# select * from v1;
+ s_no |             s_name             | start_year
+------+--------------------------------+------------
+  101 | Mr.Patil                       |       2001
+  108 | Mr.Chawan                      |       2009
+(2 rows)
+
+buisness4=# select * from v3;
+ s_no |             s_name             | trip_no |   amount  
+------+--------------------------------+---------+------------
+  101 | Mr.Patil                       |     111 | $21,000.00
+  108 | Mr.Chawan                      |     112 | $23,000.00
+  104 | Mr.Malhotra                    |     114 | $10,000.00
+  106 | Mr.Shah                        |     115 | $25,000.00
+  101 | Mr.Patil                       |     116 | $15,000.00
+  107 | Mr.Das                         |     117 |  $7,000.00
+(6 rows)
+
+buisness4=# create view v4 as select salesmen.s_no,salesmen.s_name,trip.trip_no,trip.from_city,trip.to_city,amount from salesmen,expense,trip where salesmen.s_no=trip.s_no and expense.trip_no=trip.trip_no;
+CREATE VIEW
+buisness4=# select * from v4;
+ s_no |             s_name             | trip_no |      from_city       |       to_city        |   amount  
+------+--------------------------------+---------+----------------------+----------------------+------------
+  101 | Mr.Patil                       |     111 | Pune                 | Calcutta             | $21,000.00
+  108 | Mr.Chawan                      |     112 | Mumbai               | Calcutta             | $23,000.00
+  104 | Mr.Malhotra                    |     114 | Banglore             | Mumbai               | $10,000.00
+  106 | Mr.Shah                        |     115 | Pune                 | Delhi                | $25,000.00
+  101 | Mr.Patil                       |     116 | Chennai              | Mysore               | $15,000.00
+  107 | Mr.Das                         |     117 | Agra                 | Mumbai               |  $7,000.00
+(6 rows)
+
+buisness4=# select s_name from v4 where to_city='Mumbai';
+             s_name            
+--------------------------------
+ Mr.Malhotra                  
+ Mr.Das                       
+(2 rows)
