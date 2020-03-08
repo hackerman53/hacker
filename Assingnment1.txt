@@ -1,0 +1,350 @@
+[NRC@localhost ~]$ su - postgres
+Password:
+-bash-4.1$ psql
+psql (8.4.5)
+Type "help" for help.
+
+postgres=# Create database person4;
+CREATE DATABASE
+postgres=# \c person4
+psql (8.4.5)
+You are now connected to database "person4".
+
+postgres=# \c person4
+psql (8.4.5)
+You are now connected to database "person4".
+person4=# create type dtype as enum('urban','rural');
+CREATE TYPE
+person4=# create table area(aname varchar(20) primary key,atype dtype);
+NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "area_pkey" for table "area"
+CREATE TABLE
+person4=# create table person(pno int primary key,pname varchar(20),bday date,income int,aname varchar(20) references area);
+NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "person_pkey" for table "person"
+CREATE TABLE
+person4=# insert into area values('Pune','urban');
+INSERT 0 1
+person4=# insert into area values('Mumbai','urban');
+INSERT 0 1
+person4=# insert into area values('Pune','urban');
+ERROR:  duplicate key value violates unique constraint "area_pkey"
+person4=# insert into area values('Nashik','urban');
+INSERT 0 1
+person4=# insert into area values('Nagpur','urban');
+INSERT 0 1
+person4=# insert into area values('Kolhapur','rural');
+INSERT 0 1
+person4=# insert into area values('Nagar','rural');
+INSERT 0 1
+person4=# select * from area;
+  aname   | atype
+----------+-------
+ Pune     | urban
+ Mumbai   | urban
+ Nashik   | urban
+ Nagpur   | urban
+ Kolhapur | rural
+ Nagar    | rural
+(6 rows)
+
+person4=# insert into person values(101,'Ashok','2013-07-07',40000,'Pune');
+INSERT 0 1
+person4=# insert into person values(102,'Amol','2013-02-09',25500,'Mumbai');
+INSERT 0 1
+person4=# insert into person values(103,'Shiva','2013-08-02',25500,'Nashik');
+INSERT 0 1
+person4=# insert into person values(104,'Pratik','2013-01-08',15500,'Nagpur');
+INSERT 0 1
+person4=# insert into person values(105,'Prashant','2013-11-05',5500,'Kolhapur');
+INSERT 0 1
+person4=# insert into person values(106,'Prashant','2013-01-02',51500,'Nagar');
+INSERT 0 1
+
+person4=# select * from person;
+ pno |  pname   |    bday    | income |  aname  
+-----+----------+------------+--------+----------
+ 101 | Ashok    | 2013-07-07 |  40000 | Pune
+ 102 | Amol     | 2013-02-09 |  25500 | Mumbai
+ 103 | Shiva    | 2013-08-02 |  25500 | Nashik
+ 104 | Pratik   | 2013-01-08 |  15500 | Nagpur
+ 105 | Prashant | 2013-11-05 |   5500 | Kolhapur
+ 106 | Prashant | 2013-01-02 |  51500 | Nagar
+(6 rows)
+
+person4=# select pname from person where aname='Pune';
+ pname
+-------
+ Ashok
+(1 row)
+
+person4=# select pname from person where pname like 'A%';
+ pname
+-------
+ Ashok
+ Amol
+(2 rows)
+
+                           ^
+person4=# select count(pname) from person where bday='2013-07-07';
+ count
+-------
+     1
+(1 row)
+
+person4=# select count(pname) from person where income<=30000;
+ count
+-------
+     4
+(1 row)
+
+person4=# select count(pname) from person where income between 25000 and 50000;
+ count
+-------
+     3
+(1 row)
+
+person4=# select * from person order by pname;
+ pno |  pname   |    bday    | income |  aname  
+-----+----------+------------+--------+----------
+ 102 | Amol     | 2013-02-09 |  25500 | Mumbai
+ 101 | Ashok    | 2013-07-07 |  40000 | Pune
+ 105 | Prashant | 2013-11-05 |   5500 | Kolhapur
+ 106 | Prashant | 2013-01-02 |  51500 | Nagar
+ 104 | Pratik   | 2013-01-08 |  15500 | Nagpur
+ 103 | Shiva    | 2013-08-02 |  25500 | Nashik
+(6 rows)
+
+person4=# update person set aname='Mumbai' where aname='Pune';
+UPDATE 1
+
+person4=# select pname,avg(income) from person group by pname;
+  pname   |          avg          
+----------+------------------------
+ Prashant |     28500.000000000000
+ Ashok    |     40000.000000000000
+ Pratik   | 15500.0000000000000000
+ Amol     |     25500.000000000000
+ Shiva    |     25500.000000000000
+(5 rows)
+
+person4=# delete from person where aname in ( select aname from area where atype='urban');
+DELETE 4
+person4=# select * from person
+person4-# ;
+ pno |  pname   |    bday    | income |  aname  
+-----+----------+------------+--------+----------
+ 105 | Prashant | 2013-11-05 |   5500 | Kolhapur
+ 106 | Prashant | 2013-01-02 |  51500 | Nagar
+(2 rows)
+
+person4=# update person set bday='2013-08-08' where pno=105;
+UPDATE 1
+person4=# select * from person;
+ pno |  pname   |    bday    | income |  aname  
+-----+----------+------------+--------+----------
+ 106 | Prashant | 2013-01-02 |  51500 | Nagar
+ 105 | Prashant | 2013-08-08 |   5500 | Kolhapur
+(2 rows)
+
+person4=# select pname,extract(month from bday)=08 from person;
+  pname   | ?column?
+----------+----------
+ Prashant | f
+ Prashant | t
+(2 rows)
+
+=============================================================================
+person4=# \q
+-bash-4.1$ psql
+psql (8.4.5)
+Type "help" for help.
+
+
+postgres=# Create database movie4;
+CREATE DATABASE
+postgres=# \c movie4
+psql (8.4.5)
+You are now connected to database "movie4".
+movie4=# create table movie(mname varchar(20) primary key,ryr int,budget int);
+NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "movie_pkey" for table "movie"
+CREATE TABLE
+
+movie4=# create table actor(aname varchar(20) primary key,role varchar(20),charges int,aadd varchar(20));
+NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "actor_pkey" for table "actor"
+CREATE TABLE
+movie4=# create table prod(pid int primary key,pname varchar(20),padd varchar(20));
+NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "prod_pkey" for table "prod"
+CREATE TABLE
+movie4=# create table ma(mname varchar(20) references movie ,aname varchar(20) references actor);
+CREATE TABLE
+movie4=# create table mp(mname varchar(20) references movie ,pid int references prod);
+CREATE TABLE
+movie4=# insert into movie values('DDLJ',2008,2500000);
+INSERT 0 1
+movie4=# insert into movie values('HPKD',2013,5500000);
+INSERT 0 1
+movie4=# insert into movie values('Don',2012,5000000);
+INSERT 0 1
+movie4=# insert into movie values('Kick',2014,6500000);
+INSERT 0 1
+movie4=# insert into movie values('Lai Bhari',2014,5500000);
+INSERT 0 1
+movie4=# insert into movie values('Dabang',2012,5000000);
+INSERT 0 1
+movie4=# insert into actor values('SRK','Hero',510000,'Mumbai');
+INSERT 0 1
+movie4=# insert into actor values('Varun','Hero',450000,'Mumbai');
+INSERT 0 1
+movie4=# insert into actor values('SK','Hero',550000,'Mumbai');
+INSERT 0 1
+movie4=# insert into actor values('Sarang','Villian',350000,'Pune');
+INSERT 0 1
+movie4=# insert into actor values('Bogambo','Villian',350000,'Pune');
+INSERT 0 1
+movie4=# insert into prod values(101,'Sanjay','Pune');
+INSERT 0 1
+movie4=# insert into prod values(102,'Yashraj','Pune');
+INSERT 0 1
+movie4=# insert into prod values(103,'Karan','Mumbai');
+INSERT 0 1
+movie4=# insert into prod values(104,'Farah','Mumbai');
+INSERT 0 1
+movie4=# insert into prod values(105,'Ekta','Mumbai');
+INSERT 0 1
+
+movie4=# insert into ma values('DDLJ','SRK');
+INSERT 0 1
+movie4=# insert into ma values('Don','SRK');
+INSERT 0 1
+movie4=# insert into ma values('HPKD','Varun');
+INSERT 0 1
+movie4=# insert into ma values('Kick','SK');
+INSERT 0 1
+movie4=# insert into ma values('DDLJ','Sarang');
+INSERT 0 1
+movie4=# insert into ma values('Dabang','SK');
+INSERT 0 1
+movie4=# insert into ma values('Lai Bhari','Sarang');
+INSERT 0 1
+movie4=# insert into ma values('Dabang','Bogambo');
+INSERT 0 1
+
+movie4=# insert into mp values('DDLJ',101);
+INSERT 0 1
+movie4=# insert into mp values('DDLJ',103);
+INSERT 0 1
+movie4=# insert into mp values('HPKD',102);
+INSERT 0 1
+movie4=# insert into mp values('Don',102);
+INSERT 0 1
+movie4=# insert into mp values('Don',104);
+INSERT 0 1
+movie4=# insert into mp values('Dabang',105);
+INSERT 0 1
+movie4=# insert into mp values('Kick',104);
+INSERT 0 1
+movie4=# select * from movie
+movie4-# ;
+   mname   | ryr  | budget 
+-----------+------+---------
+ DDLJ      | 2008 | 2500000
+ HPKD      | 2013 | 5500000
+ Don       | 2012 | 5000000
+ Kick      | 2014 | 6500000
+ Lai Bhari | 2014 | 5500000
+ Dabang    | 2012 | 5000000
+(6 rows)
+
+movie4=# select * from actor;
+  aname  |  role   | charges |  aadd 
+---------+---------+---------+--------
+ SRK     | Hero    |  510000 | Mumbai
+ Varun   | Hero    |  450000 | Mumbai
+ SK      | Hero    |  550000 | Mumbai
+ Sarang  | Villian |  350000 | Pune
+ Bogambo | Villian |  350000 | Pune
+(5 rows)
+
+movie4=# select * from prod;
+ pid |  pname  |  padd 
+-----+---------+--------
+ 101 | Sanjay  | Pune
+ 102 | Yashraj | Pune
+ 103 | Karan   | Mumbai
+ 104 | Farah   | Mumbai
+ 105 | Ekta    | Mumbai
+(5 rows)
+
+movie4=# select * from ma;
+   mname   |  aname 
+-----------+---------
+ DDLJ      | SRK
+ Don       | SRK
+ HPKD      | Varun
+ Kick      | SK
+ DDLJ      | Sarang
+ Dabang    | SK
+ Lai Bhari | Sarang
+ Dabang    | Bogambo
+(8 rows)
+
+movie4=# select * from mp;
+ mname  | pid
+--------+-----
+ DDLJ   | 101
+ DDLJ   | 103
+ HPKD   | 102
+ Don    | 102
+ Don    | 104
+ Dabang | 105
+ Kick   | 104
+(7 rows)
+
+movie4=# select aname from ma where mname in(select mname from ma where aname='SRK');
+ aname 
+--------
+ SRK
+ SRK
+ Sarang
+(3 rows)
+
+movie4=# select mname,budget from movie where budget in(select max(budget) from movie);
+ mname | budget 
+-------+---------
+ Kick  | 6500000
+(1 row)
+
+movie4=# select aname,count(mname) from ma group by aname having count(mname)>=all(select count(mname) from ma group by aname);
+ aname | count
+-------+-------
+ SRK   |     3
+(1 row)
+
+
+movie4=# select mname from mp group by mname having count(pid)>1;
+ mname
+-------
+ Don
+ DDLJ
+(2 rows)
+
+movie4=# select aname from actor where charges in(select max(charges) from actor);
+ aname
+-------
+ SK
+(1 row)
+
+movie4=# select pname from prod where pid in(select pid from mp where mname in(select mname from mp where pid=101));
+ pname 
+--------
+ Sanjay
+ Karan
+(2 rows)
+
+movie4=# select aname from actor where aadd!='Pune';
+ aname
+-------
+ SRK
+ Varun     
+ SK
+(3 rows)
+
