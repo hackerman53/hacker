@@ -1,0 +1,186 @@
+ RDBMS_PRACT_5_A
+
+
+Assignment 5 Cursor : SET A
+
+
+ware4=# \d
+           List of relations
+ Schema |   Name    | Type  |  Owner  
+--------+-----------+-------+----------
+ public | cities    | table | postgres
+ public | customer  | table | postgres
+ public | io        | table | postgres
+ public | items     | table | postgres
+ public | orders    | table | postgres
+ public | si        | table | postgres
+ public | stores    | table | postgres
+ public | warehouse | table | postgres
+(8 rows)
+
+ware4=# select * from cities;
+   city    |    state   
+-----------+-------------
+ Pune      | Maharashtra
+ Mumbai    | Maharashtra
+ New.Delhi | Delhi
+ Kolhapur  | Maharashtra
+ Banglore  | Karnataka
+(5 rows)
+
+ware4=# select * from customer;
+ cno |   cname   |   addr   |  cu_city 
+-----+-----------+----------+-----------
+   1 | Mr.Patil  | Katraj   | Pune
+   2 | Mr.Nene   | Khadki   | Pune
+   3 | Mr.Lele   | Khothrud | Pune
+   4 | Mr.Lale   | Thane    | Mumbai
+   5 | Mrs.Patil | XYZ      | New.Delhi
+   6 | Mrs.Nene  | UVW      | Kolhapur
+   7 | Mrs.lele  | ABC      | Banglore
+   8 | Mrs.lale  | DEF      | Banglore
+(8 rows)
+
+ware4=# select * from io;
+ ino | ono | oq
+-----+-----+----
+ 111 |  11 | 11
+ 222 |  22 | 22
+ 333 |  33 | 33
+ 444 |  44 | 44
+ 555 |  55 | 55
+ 666 |  66 | 66
+ 777 |  77 | 77
+ 888 |  88 | 88
+(8 rows)
+
+ware4=# select * from items;
+ ino | description | weight |  cost 
+-----+-------------+--------+--------
+ 111 | Metal       | 100.00 | 500.00
+ 222 | Playwood    | 200.00 | 300.00
+ 333 | Ceramic     | 100.00 | 800.00
+ 444 | Laminate    | 300.00 | 900.00
+ 555 | Channel     | 250.00 | 250.00
+ 666 | Plastic     | 900.00 | 100.00
+ 777 | POP         | 500.00 | 250.00
+ 888 | Cement      | 700.00 | 150.00
+(8 rows)
+
+ware4=# select * from orders;
+ ono |   odate    | cno
+-----+------------+-----
+  11 | 2014-12-12 |   1
+  22 | 2014-11-11 |   2
+  33 | 2014-10-10 |   3
+  44 | 2014-09-09 |   4
+  55 | 2014-08-08 |   5
+  66 | 2014-07-07 |   6
+  77 | 2014-08-08 |   7
+  88 | 2014-05-05 |   8
+(8 rows)
+
+ware4=# select * from si;
+ sid  | ino | qauntity
+------+-----+----------
+ 1001 | 111 |       11
+ 1002 | 222 |       22
+ 1003 | 333 |       33
+ 1004 | 444 |       44
+ 1005 | 555 |       55
+ 1006 | 666 |       66
+ 1007 | 777 |       77
+ 1008 | 888 |       88
+ 1009 | 111 |       99
+ 1010 | 111 |       19
+(10 rows)
+
+
+ware4=# select * from stores;
+ sid  |   sname    | loc_city  | wid
+------+------------+-----------+-----
+ 1001 | Ram        | Pune      | 101
+ 1002 | Laxman     | Pune      | 102
+ 1003 | Sita       | Pune      | 103
+ 1004 | Hanuman    | Mumbai    | 104
+ 1005 | Ravan      | New.Delhi | 105
+ 1006 | Kumbakaran | Kolhapur  | 106
+ 1007 | Vibhishan  | Banglore  | 107
+ 1008 | Jatayu     | Banglore  | 108
+ 1009 | Vanarsena  | Pune      | 101
+ 1010 | Rakshas    | Pune      | 101
+(10 rows)
+
+ware4=# select * from warehouse;
+ wid | wname |   loc   |   city   
+-----+-------+---------+-----------
+ 101 | ABC   | Katraj  | Pune
+ 102 | DEF   | Khadki  | Pune
+ 103 | GHI   | Kothrud | Pune
+ 104 | JKL   | Thane   | Mumbai
+ 105 | MNO   | XYZ     | New.Delhi
+ 106 | PQR   | UVW     | Kolhapur
+ 107 | STU   | ABC     | Banglore
+ 108 | VWX   | DEF     | Banglore
+(8 rows)
+
+ware4=# create language 'plpgsql';
+CREATE LANGUAGE
+
+1)
+
+ware4=# create function fun2(nm varchar(20))returns void as '
+declare c1 cursor for select wname from warehouse where city=nm;
+wn char(30);
+Begin
+open c1;
+loop
+fetch c1 into wn;
+exit when not found;
+raise notice''customer name:-%'',wn;
+end loop;
+close c1;
+end '
+language 'plpgsql';
+CREATE FUNCTION
+
+ware4=# select fun2('Pune');
+NOTICE:  customer name:-ABC                          
+NOTICE:  customer name:-DEF                          
+NOTICE:  customer name:-GHI                          
+ fun2
+------
+
+(1 row)
+
+
+2)
+
+ware4=# create function fun4()returns void as '
+declare c3 cursor for select ino,description from items where cost between 500 and 1000;
+ino int;
+d text;
+begin
+open c3;
+loop
+fetch c3 into ino,d;
+exit when not found;
+raise notice''item nos:%'',ino;
+raise notice''description:%'',d;
+end loop;
+close c3;
+end '
+language 'plpgsql';
+CREATE FUNCTION
+
+ware4=# select fun4();
+NOTICE:  item nos:111
+NOTICE:  description:Metal
+NOTICE:  item nos:333
+NOTICE:  description:Ceramic
+NOTICE:  item nos:444
+NOTICE:  description:Laminate
+ fun4
+------
+
+(1 row)
