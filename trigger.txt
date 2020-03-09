@@ -1,0 +1,242 @@
+ 1)
+
+create or replace function a1() returns trigger as '
+begin
+if(new.rate-old.rate)>''$2000'' then
+raise exception''Difference Should B Less Then $2000 % '',new;
+end if;return new;
+end '
+language 'plpgsql';
+CREATE FUNCTION
+
+supplier4=# create trigger t3 before insert or update on itemsupplier for each row execute procedure a1();
+CREATE TRIGGER
+
+supplier4=# update itemsupplier set rate='$6000' where ino=104;
+ERROR:  Difference Should B Less Then $2000 (104,2,"$6,000.00")
+
+supplier4=# update itemsupplier set rate='$2000' where ino=105;
+UPDATE 1
+------------------------------------------------------------------------------
+
+2)
+
+supplier4=# create or replace function a2() returns trigger as '
+begin
+if(new.rate =''$0'') then
+raise exception''Rate Should Not Be Zero %'',new;
+end if;return new;
+end '
+language 'plpgsql';
+CREATE FUNCTION
+
+supplier4=# create trigger T11 before insert or update on itemsupplier for each row execute procedure a2();
+CREATE TRIGGER
+
+supplier4=# insert into itemsupplier values(101,1,'$0');
+ERROR:  Rate Should Not Be Zero (101,1,$0.00)
+
+
+--
+1)
+student4=# create or replace function f5() returns trigger as '
+student4'# begin
+student4'# raise exception''Student Record Is Deleted %'',old;
+student4'# return old;
+student4'# end '
+student4-# language 'plpgsql';
+CREATE FUNCTION
+student4=# create trigger t1 before delete on student for each row execute procedure f5();
+CREATE TRIGGER
+student4=# select * from student;
+ sno |  sname  | sclass | saddrs
+-----+---------+--------+--------
+ 101 | Pratik  | FY     | Pune
+ 102 | Harshal | FY     | Pune
+ 103 | Suresh  | SY     | Pune
+ 104 | Ramesh  | SY     | Mumbai
+ 105 | Jayesh  | SY     | Mumbai
+ 106 | Rakesh  | SY     | Mumbai
+ 107 | Vikesh  | TY     | Pune
+ 108 | Mikesh  | TY     | Pune
+ 109 | Mitesh  | TY     | Pune
+ 110 | Priyesh | TY     | Pune
+(10 rows)
+
+student4=# delete from student;
+ERROR:  Student Record Is Deleted (101,Pratik,FY,Pune)
+student4=#
+
+---------------------------------------------------------------------------------------------
+2)
+student4=# create or replace function f6() returns trigger as '
+begin
+if new.marks<10 new.marks="" or="">100 then
+raise exception'' Invalid %'',new;
+end if;
+return new;
+end '
+language 'plpgsql';
+CREATE FUNCTION
+
+student4=# create trigger t4 before insert or update on ss for each row execute procedure f6();
+CREATE TRIGGER
+
+student4=# insert into ss values(105,4,91);
+INSERT 0 1
+
+student4=# insert into ss values(105,4,09);
+ERROR:   Invalid (105,4,9)
+
+ RDBMS_PRACT_7_C
+
+
+Assignment 7 Trigger : SET C
+
+[NRC@localhost ~]$ su - postgres;
+Password:
+-bash-4.1$ psql
+psql (8.4.5)
+Type "help" for help.
+
+postgres=# create database paper4
+postgres-# ;
+CREATE DATABASE
+postgres=# create table newspaper(name varchar(20) primary key,language varchar(20),publisher varchar(20),cost money);
+NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "newspaper_pkey" for table "newspaper"
+CREATE TABLE
+postgres=# create table cities(pincode varchar(6) primary key,city varchar(20),state varchar(20));
+NOTICE:  CREATE TABLE / PRIMARY KEY will create implicit index "cities_pkey" for table "cities"
+CREATE TABLE
+postgres=# create table n_c(name varchar(20) references newspaper(name) on delete cascade,pincode varchar(6) references cities(pincode) on delete cascade);
+CREATE TABLE
+postgres=# select * from newspaper;
+ name | language | publisher | cost
+------+----------+-----------+------
+(0 rows)
+
+postgres=# select * from cities;
+ pincode | city | state
+---------+------+-------
+(0 rows)
+
+postgres=# select * from n_c;
+ name | pincode
+------+---------
+(0 rows)
+
+postgres=# drop table n_c;
+DROP TABLE
+postgres=# create table n_c(name varchar(20) references newspaper(name) on delete cascade,pincode varchar(6) references cities(pincode) on delete cascade,daily_req int);
+CREATE TABLE
+postgres=# select * from n_c;
+ name | pincode | daily_req
+------+---------+-----------
+(0 rows)
+
+postgres=# insert into newspaper values('Sakal','Marathi','Sakal','$2');
+INSERT 0 1
+postgres=# insert into newspaper values('Today','Marathi','Sakal','$2');
+INSERT 0 1
+postgres=# insert into newspaper values('XYZ','English','Abc','$5');
+INSERT 0 1
+postgres=# insert into cities values('411002','Pune','Maharashtra');
+INSERT 0 1
+postgres=# insert into cities values('422020','Nashik','Maharashtra');
+INSERT 0 1
+postgres=# insert into cities values('455020','XYZ','Kolkata');
+INSERT 0 1
+postgres=# insert into n_c values('Sakal','411002',5000);
+INSERT 0 1
+postgres=# insert into n_c values('Today','422020',500);
+INSERT 0 1
+postgres=# insert into n_c values('XYZ','455020',500);
+INSERT 0 1
+postgres=# select * from newspaper;
+ name  | language | publisher | cost 
+-------+----------+-----------+-------
+ Sakal | Marathi  | Sakal     | $2.00
+ Today | Marathi  | Sakal     | $2.00
+ XYZ   | English  | Abc       | $5.00
+(3 rows)
+
+postgres=# select * from cities;
+ pincode |  city  |    state   
+---------+--------+-------------
+ 411002  | Pune   | Maharashtra
+ 422020  | Nashik | Maharashtra
+ 455020  | XYZ    | Kolkata
+(3 rows)
+
+postgres=# select * from n_c;
+ name  | pincode | daily_req
+-------+---------+-----------
+ Sakal | 411002  |      5000
+ Today | 422020  |       500
+ XYZ   | 455020  |       500
+(3 rows)
+
+postgres=#
+postgres=# \q
+-bash-4.1$ psql
+psql (8.4.5)
+Type "help" for help.
+
+postgres=#
+---------------------------------------------------------------------------------------------
+1)
+
+create or replace function t11()returns trigger as '
+begin
+if length(new.pincode)<6 length="" new.pincode="" or="">6 then
+raise exception ''Incorrect Pincode %'',new;
+end if;
+return new;
+end '
+language 'plpgsql';
+CREATE FUNCTION
+
+create trigger t1 before insert on cities for each row execute procedure t11();
+CREATE TRIGGER
+
+paper4=# insert into cities values('41101','Solapur','Maharashtra');
+ERROR:  Incorrect Pincode (41101,Solapur,Maharashtra)
+
+paper4=# insert into cities values('411012','Solapur','Maharashtra');
+INSERT 0 1
+
+paper4=# insert into cities values('4110121','Solapur','Maharashtra');
+ERROR:  value too long for type character varying(6)
+paper4=#
+-----------------------------------------------------------------------------------------------
+
+2)
+
+paper4=# create or replace function t12()returns trigger as '
+begin
+if old.state=''Maharashtra'' then
+raise exception ''Cant Delete %'',old;
+end if;
+return old;
+end '
+language 'plpgsql';
+CREATE FUNCTION
+              ^
+paper4=# create trigger t2 before delete on cities for each row execute procedure t12();
+CREATE TRIGGER
+
+paper4=# select * from cities;
+ pincode |  city   |    state   
+---------+---------+-------------
+ 411002  | Pune    | Maharashtra
+ 422020  | Nashik  | Maharashtra
+ 455020  | XYZ     | Kolkata
+ 411012  | Solapur | Maharashtra
+(4 rows)
+
+paper4=# delete from cities where state='Maharashtra';
+ERROR:  Cant Delete (411002,Pune,Maharashtra)
+
+paper4=# delete from cities where state='Kolkata';
+DELETE 1
+
